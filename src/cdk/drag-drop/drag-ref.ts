@@ -30,6 +30,26 @@ export interface DragRefConfig {
    * considers them to have changed the drag direction.
    */
   pointerDirectionChangeThreshold: number;
+
+  /**
+   * The strategy to take when dropping the item (in non drop zone area)
+   */
+  dropStrategy: CdkDropStrategy;
+}
+
+  /**
+   * Enum to decide what to do when the user drop the item
+   * LastKnownContainer - Drop the item on the Last container the item was dragged hover,
+   *  no matter where the item is dropped.
+   * ExactLocation - Tries to drop the item in the current location,
+   *  if the current location
+   * is not inside a valid drop zoom
+   * the item will return to the initial container.
+   */
+export enum CdkDropStrategy {
+  LastKnownContainer,
+  ExactLocation
+
 }
 
 /** Options that can be used to bind a passive event listener. */
@@ -683,9 +703,11 @@ export class DragRef<T = any> {
     // case where two containers are connected one way and the user tries to undo dragging an
     // item into a new container.
     if (!newContainer && this.dropContainer !== this._initialContainer &&
-        this._initialContainer._isOverContainer(x, y)) {
-      newContainer = this._initialContainer;
-    }
+      (this._initialContainer._isOverContainer(x, y) ||
+      (!this.dropContainer!._isOverContainer(x, y) &&
+      this._config.dropStrategy === CdkDropStrategy.ExactLocation))) {
+    newContainer = this._initialContainer;
+  }
 
     if (newContainer) {
       this._ngZone.run(() => {
@@ -695,7 +717,7 @@ export class DragRef<T = any> {
         // Notify the new container that the item has entered.
         this.entered.next({item: this, container: newContainer!});
         this.dropContainer = newContainer!;
-        this.dropContainer.enter(this, x, y);
+        this.dropContainer!.enter(this, x, y);
       });
     }
 
