@@ -7,11 +7,13 @@ export const cdkExperimentalPackage = new BuildPackage('cdk-experimental', [cdkP
 export const materialExperimentalPackage = new BuildPackage('material-experimental',
     [materialPackage]);
 export const momentAdapterPackage = new BuildPackage('material-moment-adapter', [materialPackage]);
+export const luxonAdapterPackage = new BuildPackage('material-luxon-adapter', [materialPackage]);
 export const examplesPackage = new BuildPackage('material-examples', [
   cdkPackage,
   cdkExperimentalPackage,
   materialPackage,
-  momentAdapterPackage
+  momentAdapterPackage,
+  luxonAdapterPackage
 ]);
 
 // The material package re-exports its secondary entry-points at the root so that all of the
@@ -37,5 +39,6 @@ export const allBuildPackages = [
   cdkExperimentalPackage,
   materialExperimentalPackage,
   momentAdapterPackage,
+  luxonAdapterPackage,
   examplesPackage
 ];
