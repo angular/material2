@@ -33,6 +33,7 @@ import {DateAdapter, MAT_DATE_FORMATS, MatDateFormats, ThemePalette} from '@angu
 import {MatFormField} from '@angular/material/form-field';
 import {MAT_INPUT_VALUE_ACCESSOR} from '@angular/material/input';
 import {Subscription} from 'rxjs';
+import {DOCUMENT} from '@angular/common';
 import {MatDatepicker} from './datepicker';
 import {createMissingDateImplError} from './datepicker-errors';
 
@@ -195,12 +196,10 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
   _onTouched = () => {};
 
   private _cvaOnChange: (value: any) => void = () => {};
-
   private _validatorOnChange = () => {};
-
   private _datepickerSubscription = Subscription.EMPTY;
-
   private _localeSubscription = Subscription.EMPTY;
+  private _document: Document;
 
   /** The form control validator for whether the input parses. */
   private _parseValidator: ValidatorFn = (): ValidationErrors | null => {
@@ -243,13 +242,17 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
       private _elementRef: ElementRef<HTMLInputElement>,
       @Optional() public _dateAdapter: DateAdapter<D>,
       @Optional() @Inject(MAT_DATE_FORMATS) private _dateFormats: MatDateFormats,
-      @Optional() private _formField: MatFormField) {
+      @Optional() private _formField: MatFormField,
+      // @deletion-target 6.0.0 make the `document` a required param.
+      @Inject(DOCUMENT) document?: any) {
     if (!this._dateAdapter) {
       throw createMissingDateImplError('DateAdapter');
     }
     if (!this._dateFormats) {
       throw createMissingDateImplError('MAT_DATE_FORMATS');
     }
+
+    this._document = document;
 
     // Update the displayed date when the locale changes.
     this._localeSubscription = _dateAdapter.localeChanges.subscribe(() => {
@@ -321,10 +324,16 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, V
 
   _onInput(value: string) {
     let date = this._dateAdapter.parse(value, this._dateFormats.parse.dateInput);
+    let isFocused = !this._document ||
+                    this._document.activeElement === this._elementRef.nativeElement;
+
     this._lastValueValid = !date || this._dateAdapter.isValid(date);
     date = this._getValidDateOrNull(date);
 
-    if (!this._dateAdapter.sameDate(date, this._value)) {
+    // If the input has a placeholder, IE will fire the `input` event on page load, element focus
+    // and blur. Ensure that the element is focused when the event occurs. See:
+    // https://connect.microsoft.com/IE/feedback/details/885747/
+    if (isFocused && !this._dateAdapter.sameDate(date, this._value)) {
       this._value = date;
       this._cvaOnChange(date);
       this._valueChange.emit(date);
