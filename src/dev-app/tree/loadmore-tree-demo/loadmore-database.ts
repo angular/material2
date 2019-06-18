@@ -12,10 +12,10 @@ import {BehaviorSubject} from 'rxjs';
 const LOAD_MORE = 'LOAD_MORE';
 
 /** Nested node */
-export class LoadmoreNode {
-  childrenChange: BehaviorSubject<LoadmoreNode[]> = new BehaviorSubject<LoadmoreNode[]>([]);
+export class LoadMoreNode {
+  childrenChange: BehaviorSubject<LoadMoreNode[]> = new BehaviorSubject<LoadMoreNode[]>([]);
 
-  get children(): LoadmoreNode[] {
+  get children(): LoadMoreNode[] {
     return this.childrenChange.value;
   }
 
@@ -25,7 +25,7 @@ export class LoadmoreNode {
 }
 
 /** Flat node with expandable and level information */
-export class LoadmoreFlatNode {
+export class LoadMoreFlatNode {
   constructor(public item: string,
               public level: number = 1,
               public expandable: boolean = false,
@@ -37,10 +37,10 @@ export class LoadmoreFlatNode {
  * button, more data will be loaded.
  */
 @Injectable()
-export class LoadmoreDatabase {
-  batchNumber = 5;
-  dataChange: BehaviorSubject<LoadmoreNode[]> = new BehaviorSubject<LoadmoreNode[]>([]);
-  nodeMap: Map<string, LoadmoreNode> = new Map<string, LoadmoreNode>();
+export class LoadMoreDatabase {
+  batchNumber = 2;
+  dataChange: BehaviorSubject<LoadMoreNode[]> = new BehaviorSubject<LoadMoreNode[]>([]);
+  nodeMap: Map<string, LoadMoreNode> = new Map<string, LoadMoreNode>();
 
   /** The data */
   rootLevelNodes = ['Vegetables', 'Fruits'];
@@ -66,23 +66,24 @@ export class LoadmoreDatabase {
     if (onlyFirstTime && parent.children!.length > 0) {
       return;
     }
-    const newChildrenNumber = parent.children!.length + this.batchNumber;
+    const newChildrenNumber = (parent.children!.length && parent.children!.length - 1)
+        + this.batchNumber;
     const nodes = children.slice(0, newChildrenNumber)
         .map(name => this._generateNode(name));
     if (newChildrenNumber < children.length) {
       // Need a new load more node
-      nodes.push(new LoadmoreNode(LOAD_MORE, false, item));
+      nodes.push(new LoadMoreNode(`${LOAD_MORE}_${item}`, false, item));
     }
 
     parent.childrenChange.next(nodes);
     this.dataChange.next(this.dataChange.value);
   }
 
-  private _generateNode(item: string): LoadmoreNode {
+  private _generateNode(item: string): LoadMoreNode {
     if (this.nodeMap.has(item)) {
       return this.nodeMap.get(item)!;
     }
-    const result = new LoadmoreNode(item, this.dataMap.has(item));
+    const result = new LoadMoreNode(item, this.dataMap.has(item));
     this.nodeMap.set(item, result);
     return result;
   }

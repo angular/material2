@@ -1,7 +1,6 @@
 <mat-tree [dataSource]="dataSource" [treeControl]="treeControl">
   <!-- Leaf node -->
-  <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding>
-    <button mat-icon-button disabled></button>
+  <mat-tree-node *matTreeNodeDef="let node" class="example-leaf-node" matTreeNodePadding>
     {{node.item}}
   </mat-tree-node>
 
@@ -18,9 +17,10 @@
     {{node.item}}
   </mat-tree-node>
 
-  <mat-tree-node *matTreeNodeDef="let node; when: isLoadMore">
+  <!-- load-more node -->
+  <mat-tree-node *matTreeNodeDef="let node; when: isLoadMore" class="example-load-more-node" matTreeNodePadding>
     <button mat-button (click)="loadMore(node.loadMoreParentItem)">
-      Load more...
+      Load more {{node.loadMoreParentItem}}...
     </button>
   </mat-tree-node>
 </mat-tree>
