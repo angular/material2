@@ -68,7 +68,10 @@ export declare class MatExpansionPanelContent {
 export interface MatExpansionPanelDefaultOptions {
     collapsedHeight: string;
     expandedHeight: string;
+    headerRole?: MatExpansionPanelHeaderRole;
     hideToggle: boolean;
+    toggleAriaLabel?: string;
+    toggleAriaLabelledBy?: string;
 }
 
 export declare class MatExpansionPanelDescription {
@@ -78,18 +81,33 @@ export declare class MatExpansionPanelHeader implements OnDestroy, FocusableOpti
     collapsedHeight: string;
     readonly disabled: any;
     expandedHeight: string;
+    headerRole: MatExpansionPanelHeaderRole;
     panel: MatExpansionPanel;
+    toggleAriaLabel: string | null;
+    toggleAriaLabelledBy: string | null;
     constructor(panel: MatExpansionPanel, _element: ElementRef, _focusMonitor: FocusMonitor, _changeDetectorRef: ChangeDetectorRef, defaultOptions?: MatExpansionPanelDefaultOptions);
     _getExpandedState(): string;
-    _getPanelId(): string;
+    _getHeaderAriaControls(): string | null;
+    _getHeaderAriaExpanded(): boolean | null;
+    _getHeaderTabIndex(): number;
+    _getToggleAriaControls(): string | null;
+    _getToggleAriaExpanded(): boolean | null;
     _getTogglePosition(): MatAccordionTogglePosition;
+    _getToggleRole(): 'button' | null;
+    _getToggleTabIndex(): number;
+    _getPanelId(): string;
     _isExpanded(): boolean;
+    _isHeaderButtonRole(): boolean;
+    _isToggleButtonRole(): boolean;
     _keydown(event: KeyboardEvent): void;
+    _keydownHeader(event: KeyboardEvent): void;
     _showToggle(): boolean;
     _toggle(): void;
     focus(origin?: FocusOrigin): void;
     ngOnDestroy(): void;
 }
+
+export declare type MatExpansionPanelHeaderRole = 'button' | string | null;
 
 export declare type MatExpansionPanelState = 'expanded' | 'collapsed';
 
