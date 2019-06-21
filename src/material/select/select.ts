@@ -388,6 +388,9 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
     this._disableOptionCentering = coerceBooleanProperty(value);
   }
 
+  /** Define select panel maximum height. */
+  @Input() panelMaxHeight: number = SELECT_PANEL_MAX_HEIGHT;
+
   /**
    * Function to compare the option values with the selected values. The first argument
    * is a value from an option. The second is a value from the selection. A boolean
@@ -1037,7 +1040,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
       activeOptionIndex + labelCount,
       this._getItemHeight(),
       this.panel.nativeElement.scrollTop,
-      SELECT_PANEL_MAX_HEIGHT
+      this.panelMaxHeight
     );
   }
 
@@ -1057,7 +1060,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
   private _calculateOverlayPosition(): void {
     const itemHeight = this._getItemHeight();
     const items = this._getItemCount();
-    const panelHeight = Math.min(items * itemHeight, SELECT_PANEL_MAX_HEIGHT);
+    const panelHeight = Math.min(items * itemHeight, this.panelMaxHeight);
     const scrollContainerHeight = items * itemHeight;
 
     // The farthest the panel can be scrolled before it hits the bottom
@@ -1188,7 +1191,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
                                   maxScroll: number): number {
     const itemHeight = this._getItemHeight();
     const optionHeightAdjustment = (itemHeight - this._triggerRect.height) / 2;
-    const maxOptionsDisplayed = Math.floor(SELECT_PANEL_MAX_HEIGHT / itemHeight);
+    const maxOptionsDisplayed = Math.floor(this.panelMaxHeight / itemHeight);
     let optionOffsetFromPanelTop: number;
 
     // Disable offset if requested by user by returning 0 as value to offset
@@ -1204,8 +1207,8 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
       // The first item is partially out of the viewport. Therefore we need to calculate what
       // portion of it is shown in the viewport and account for it in our offset.
-      let partialItemHeight =
-          itemHeight - (this._getItemCount() * itemHeight - SELECT_PANEL_MAX_HEIGHT) % itemHeight;
+      let partialItemHeight = itemHeight -
+          (this._getItemCount() * itemHeight - this.panelMaxHeight) % itemHeight;
 
       // Because the panel height is longer than the height of the options alone,
       // there is always extra padding at the top or bottom of the panel. When
@@ -1241,7 +1244,7 @@ export class MatSelect extends _MatSelectMixinBase implements AfterContentInit, 
 
     const panelHeightTop = Math.abs(this._offsetY);
     const totalPanelHeight =
-        Math.min(this._getItemCount() * itemHeight, SELECT_PANEL_MAX_HEIGHT);
+        Math.min(this._getItemCount() * itemHeight, this.panelMaxHeight);
     const panelHeightBottom = totalPanelHeight - panelHeightTop - this._triggerRect.height;
 
     if (panelHeightBottom > bottomSpaceAvailable) {
