@@ -182,8 +182,14 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   /** An input indicating the type of the header component, if set. */
   @Input() headerComponent: ComponentType<any>;
 
+  /** An input indicating the type of the footer component, if set. */
+  @Input() footerComponent: ComponentType<any>;
+
   /** A portal containing the header component type for this calendar. */
   _calendarHeaderPortal: Portal<any>;
+
+  /** A portal containing the footer component type for this calendar. */
+  _calendarFooterPortal: Portal<any>;
 
   private _intlChanges: Subscription;
 
@@ -310,6 +316,10 @@ export class MatCalendar<D> implements AfterContentInit, AfterViewChecked, OnDes
   ngAfterContentInit() {
     this._calendarHeaderPortal = new ComponentPortal(this.headerComponent || MatCalendarHeader);
     this.activeDate = this.startAt || this._dateAdapter.today();
+
+    if (this.footerComponent) {
+      this._calendarFooterPortal = new ComponentPortal(this.footerComponent);
+    }
 
     // Assign to the private property since we don't want to move focus on init.
     this._currentView = this.startView;
