@@ -6,8 +6,8 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {FocusMonitor, FocusableOption, FocusOrigin} from '@angular/cdk/a11y';
-import {ENTER, SPACE, hasModifierKey} from '@angular/cdk/keycodes';
+import {FocusableOption, FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
+import {ENTER, hasModifierKey, SPACE} from '@angular/cdk/keycodes';
 import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
@@ -15,19 +15,19 @@ import {
   Directive,
   ElementRef,
   Host,
+  Inject,
   Input,
   OnDestroy,
-  ViewEncapsulation,
   Optional,
-  Inject,
+  ViewEncapsulation,
 } from '@angular/core';
-import {merge, Subscription, EMPTY} from 'rxjs';
+import {EMPTY, merge, Subscription} from 'rxjs';
 import {filter} from 'rxjs/operators';
 import {matExpansionAnimations} from './expansion-animations';
 import {
+  MAT_EXPANSION_PANEL_DEFAULT_OPTIONS,
   MatExpansionPanel,
   MatExpansionPanelDefaultOptions,
-  MAT_EXPANSION_PANEL_DEFAULT_OPTIONS,
 } from './expansion-panel';
 import {MatAccordionTogglePosition} from './accordion-base';
 
@@ -52,7 +52,7 @@ import {MatAccordionTogglePosition} from './accordion-base';
     'class': 'mat-expansion-panel-header',
     'role': 'button',
     '[attr.id]': 'panel._headerId',
-    '[attr.tabindex]': 'disabled ? -1 : 0',
+    '[attr.tabindex]': '0',
     '[attr.aria-controls]': '_getPanelId()',
     '[attr.aria-expanded]': '_isExpanded()',
     '[attr.aria-disabled]': 'panel.disabled',
