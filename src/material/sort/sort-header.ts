@@ -20,7 +20,7 @@ import {
 } from '@angular/core';
 import {CanDisable, CanDisableCtor, mixinDisabled} from '@angular/material/core';
 import {merge, Subscription} from 'rxjs';
-import {MatSort, MatSortable} from './sort';
+import {MatSort, MatSortable, Sort} from './sort';
 import {matSortAnimations} from './sort-animations';
 import {SortDirection} from './sort-direction';
 import {getSortHeaderNotContainedWithinSortError} from './sort-errors';
@@ -151,7 +151,7 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
     }
 
     this._rerenderSubscription = merge(_sort.sortChange, _sort._stateChanges, _intl.changes)
-        .subscribe(() => {
+        .subscribe((change) => {
           if (this._isSorted()) {
             this._updateArrowDirection();
           }
@@ -163,6 +163,10 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
           }
 
           changeDetectorRef.markForCheck();
+
+          if ((<Sort>change) && (<Sort>change).active === this.id) {
+            this._animateOnSort();
+          }
         });
   }
 
@@ -224,20 +228,6 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
     if (this._isDisabled()) { return; }
 
     this._sort.sort(this);
-
-    // Do not show the animation if the header was already shown in the right position.
-    if (this._viewState.toState === 'hint' || this._viewState.toState === 'active') {
-      this._disableViewStateAnimation = true;
-    }
-
-    // If the arrow is now sorted, animate the arrow into place. Otherwise, animate it away into
-    // the direction it is facing.
-    const viewState: ArrowViewStateTransition = this._isSorted() ?
-        {fromState: this._arrowDirection, toState: 'active'} :
-        {fromState: 'active', toState: this._arrowDirection};
-    this._setAnimationTransitionState(viewState);
-
-    this._showIndicatorHint = false;
   }
 
   /** Whether this MatSortHeader is currently sorted in either ascending or descending order. */
@@ -292,5 +282,21 @@ export class MatSortHeader extends _MatSortHeaderMixinBase
   /** Whether the arrow inside the sort header should be rendered. */
   _renderArrow() {
     return !this._isDisabled() || this._isSorted();
+  }
+
+  private _animateOnSort() {
+    // Do not show the animation if the header was already shown in the right position.
+    if (this._viewState.toState === 'hint' || this._viewState.toState === 'active') {
+      this._disableViewStateAnimation = true;
+    }
+
+    // If the arrow is now sorted, animate the arrow into place. Otherwise, animate it away into
+    // the direction it is facing.
+    const viewState: ArrowViewStateTransition = this._isSorted() ?
+        {fromState: this._arrowDirection, toState: 'active'} :
+        {fromState: 'active', toState: this._arrowDirection};
+    this._setAnimationTransitionState(viewState);
+
+    this._showIndicatorHint = false;
   }
 }
