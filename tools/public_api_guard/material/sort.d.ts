@@ -13,16 +13,17 @@ export declare const MAT_SORT_HEADER_INTL_PROVIDER: {
 
 export declare function MAT_SORT_HEADER_INTL_PROVIDER_FACTORY(parentIntl: MatSortHeaderIntl): MatSortHeaderIntl;
 
-export declare class MatSort extends _MatSortMixinBase implements CanDisable, HasInitialized, OnChanges, OnDestroy, OnInit {
-    readonly _stateChanges: Subject<void>;
+export declare class MatSort extends _MatSortMixinBase implements CanDisable, HasInitialized, OnChanges, OnDestroy, OnInit, MatSortContainer<MatSortSortableState> {
     active: string;
     direction: SortDirection;
     disableClear: boolean;
     readonly sortChange: EventEmitter<Sort>;
     sortables: Map<string, MatSortable>;
     start: 'asc' | 'desc';
+    readonly stateChanges: Subject<void>;
     deregister(sortable: MatSortable): void;
     getNextSortDirection(sortable: MatSortable): SortDirection;
+    getSortableState(sortable: MatSortable): MatSortSortableState;
     ngOnChanges(): void;
     ngOnDestroy(): void;
     ngOnInit(): void;
@@ -32,12 +33,6 @@ export declare class MatSort extends _MatSortMixinBase implements CanDisable, Ha
     static ngAcceptInputType_disabled: boolean | string | null | undefined;
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatSort, "[matSort]", ["matSort"], { 'disabled': "matSortDisabled", 'active': "matSortActive", 'start': "matSortStart", 'direction': "matSortDirection", 'disableClear': "matSortDisableClear" }, { 'sortChange': "matSortChange" }, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatSort>;
-}
-
-export interface MatSortable {
-    disableClear: boolean;
-    id: string;
-    start: 'asc' | 'desc';
 }
 
 export declare const matSortAnimations: {
@@ -55,13 +50,13 @@ export declare class MatSortHeader extends _MatSortHeaderMixinBase implements Ca
     _disableViewStateAnimation: boolean;
     _intl: MatSortHeaderIntl;
     _showIndicatorHint: boolean;
-    _sort: MatSort;
     _viewState: ArrowViewStateTransition;
     arrowPosition: 'before' | 'after';
     disableClear: boolean;
     id: string;
+    protected sortContainer: MatSortContainer<SortableState>;
     start: 'asc' | 'desc';
-    constructor(_intl: MatSortHeaderIntl, changeDetectorRef: ChangeDetectorRef, _sort: MatSort, _columnDef: MatSortHeaderColumnDef);
+    constructor(_intl: MatSortHeaderIntl, changeDetectorRef: ChangeDetectorRef, _columnDef: MatSortHeaderColumnDef, sortContainer: MatSortContainer<SortableState>);
     _getAriaSortAttribute(): "ascending" | "descending" | null;
     _getArrowDirectionState(): string;
     _getArrowViewState(): string;
@@ -90,6 +85,10 @@ export declare class MatSortHeaderIntl {
 export declare class MatSortModule {
     static ɵinj: i0.ɵɵInjectorDef<MatSortModule>;
     static ɵmod: i0.ɵɵNgModuleDefWithMeta<MatSortModule, [typeof i1.MatSort, typeof i2.MatSortHeader], [typeof i3.CommonModule], [typeof i1.MatSort, typeof i2.MatSortHeader]>;
+}
+
+export interface MatSortSortableState extends SortableState {
+    active: string;
 }
 
 export interface Sort {
