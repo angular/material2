@@ -1,4 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
+import {Location} from '@angular/common';
+import {SpyLocation, MockLocationStrategy} from '@angular/common/testing';
 import {By} from '@angular/platform-browser';
 import {ComponentFixture, TestBed, async, inject, fakeAsync, tick} from '@angular/core/testing';
 import {Directionality} from '@angular/cdk/bidi';
@@ -23,12 +25,16 @@ describe('Overlay directives', () => {
   let overlayContainerElement: HTMLElement;
   let fixture: ComponentFixture<ConnectedOverlayDirectiveTest>;
   let dir: {value: string};
+  let mockLocation: SpyLocation;
 
   beforeEach(() => {
     TestBed.configureTestingModule({
       imports: [OverlayModule],
       declarations: [ConnectedOverlayDirectiveTest, ConnectedOverlayPropertyInitOrder],
-      providers: [{provide: Directionality, useFactory: () => dir = {value: 'ltr'}}],
+      providers: [{provide: Directionality, useFactory: () => dir = {value: 'ltr'}}, {
+        provide: Location,
+        useClass: SpyLocation
+      }],
     });
   });
 
@@ -37,10 +43,12 @@ describe('Overlay directives', () => {
     fixture.detectChanges();
   });
 
-  beforeEach(inject([OverlayContainer, Overlay], (oc: OverlayContainer, o: Overlay) => {
+  beforeEach(inject([OverlayContainer, Overlay, Location],
+    (oc: OverlayContainer, o: Overlay, l: Location) => {
     overlayContainer = oc;
     overlay = o;
     overlayContainerElement = oc.getContainerElement();
+    mockLocation = l as SpyLocation;
   }));
 
   afterEach(() => {
@@ -343,6 +351,19 @@ describe('Overlay directives', () => {
       expect(pane.style.transform).toContain('translateY(55px)');
     });
 
+    it('should support dispose on navigation', () => {
+      const testComponent = fixture.componentInstance;
+
+      testComponent.disposeOnNavigation = true;
+      fixture.detectChanges();
+
+      expect(overlayContainerElement.textContent).toContain('Menu content');
+
+      mockLocation.simulateUrlPop('');
+      expect(overlayContainerElement.childNodes.length).toBe(0);
+      expect(overlayContainerElement.textContent).toBe('');
+    });
+
     it('should be able to update the origin after init', () => {
       const testComponent = fixture.componentInstance;
 
@@ -617,7 +638,8 @@ describe('Overlay directives', () => {
             [cdkConnectedOverlayMinWidth]="minWidth"
             [cdkConnectedOverlayMinHeight]="minHeight"
             [cdkConnectedOverlayPositions]="positionOverrides"
-            [cdkConnectedOverlayTransformOriginOn]="transformOriginSelector">
+            [cdkConnectedOverlayTransformOriginOn]="transformOriginSelector"
+            [cdkConnectedOverlayDisposeOnNavigation]="disposeOnNavigation">
     <p>Menu content</p>
   </ng-template>`,
 })
@@ -651,6 +673,7 @@ class ConnectedOverlayDirectiveTest {
   detachHandler = jasmine.createSpy('detachHandler');
   attachResult: HTMLElement;
   transformOriginSelector: string;
+  disposeOnNavigation =  false;
 }
 
 @Component({
