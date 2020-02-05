@@ -354,6 +354,7 @@ describe('Overlay directives', () => {
     it('should support dispose on navigation', () => {
       const testComponent = fixture.componentInstance;
 
+      fixture.componentInstance.isOpen = true;
       testComponent.disposeOnNavigation = true;
       fixture.detectChanges();
 
