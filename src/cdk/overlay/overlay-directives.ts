@@ -212,7 +212,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
    * Whether the overlay should be disposed of when the user goes backwards/forwards in history.
    */
   @Input('cdkConnectedOverlayDisposeOnNavigation')
-  get disposeOnNavigation(): boolean { return this._disposeOnNavigation; }
+  get disposeOnNavigation() { return this._disposeOnNavigation; }
   set disposeOnNavigation(value: boolean) {
     this._disposeOnNavigation = coerceBooleanProperty(value);
   }
@@ -411,6 +411,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   static ngAcceptInputType_flexibleDimensions: BooleanInput;
   static ngAcceptInputType_growAfterOpen: BooleanInput;
   static ngAcceptInputType_push: BooleanInput;
+  static ngAcceptInputType_disposeOnNavigation: BooleanInput;
 }
 
 

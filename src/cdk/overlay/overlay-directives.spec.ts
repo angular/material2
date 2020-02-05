@@ -1,6 +1,6 @@
 import {Component, ViewChild} from '@angular/core';
 import {Location} from '@angular/common';
-import {SpyLocation, MockLocationStrategy} from '@angular/common/testing';
+import {SpyLocation} from '@angular/common/testing';
 import {By} from '@angular/platform-browser';
 import {ComponentFixture, TestBed, async, inject, fakeAsync, tick} from '@angular/core/testing';
 import {Directionality} from '@angular/cdk/bidi';
