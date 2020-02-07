@@ -1761,6 +1761,47 @@ describe('MatDatepicker', () => {
     }));
   });
 
+  describe('panelClass input', () => {
+    let fixture: ComponentFixture<PanelClassDatepicker>;
+    let testComponent: PanelClassDatepicker;
+
+    beforeEach(fakeAsync(() => {
+      fixture = createComponent(PanelClassDatepicker, [MatNativeDateModule]);
+      fixture.detectChanges();
+
+      testComponent = fixture.componentInstance;
+    }));
+
+    afterEach(fakeAsync(() => {
+      testComponent.datepicker.close();
+      fixture.detectChanges();
+      flush();
+    }));
+
+    it('should accept a single class', () => {
+      testComponent.panelClass = 'foobar';
+      fixture.detectChanges();
+      expect(testComponent.datepicker.panelClass).toEqual(['foobar']);
+    });
+
+    it('should accept multiple classes', () => {
+      testComponent.panelClass = 'foo bar';
+      fixture.detectChanges();
+      expect(testComponent.datepicker.panelClass).toEqual(['foo', 'bar']);
+    });
+
+    it('should work with ngClass', () => {
+      testComponent.panelClass = ['foo', 'bar'];
+      testComponent.datepicker.open();
+      fixture.detectChanges();
+
+      const datepickerContent = testComponent.datepicker['_dialogRef']!!.componentInstance;
+      const actualClasses = datepickerContent._elementRef.nativeElement.children[1].classList;
+      expect(actualClasses.contains('foo')).toBe(true);
+      expect(actualClasses.contains('bar')).toBe(true);
+    });
+  });
+
 });
 
 
@@ -2071,3 +2112,15 @@ class DatepickerToggleWithNoDatepicker {}
   `,
 })
 class DatepickerInputWithNoDatepicker {}
+
+@Component({
+  template: `
+  <input [matDatepicker]="d" [value]="date">
+  <mat-datepicker [panelClass]="panelClass" touchUi #d></mat-datepicker>
+  `,
+})
+class PanelClassDatepicker {
+  date = new Date(0);
+  panelClass: any;
+  @ViewChild('d') datepicker: MatDatepicker<Date>;
+}

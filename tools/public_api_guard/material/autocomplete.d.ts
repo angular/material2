@@ -28,7 +28,7 @@ export declare class MatAutocomplete extends _MatAutocompleteMixinBase implement
     _keyManager: ActiveDescendantKeyManager<MatOption>;
     get autoActiveFirstOption(): boolean;
     set autoActiveFirstOption(value: boolean);
-    set classList(value: string);
+    set classList(value: string | string[]);
     readonly closed: EventEmitter<void>;
     displayWith: ((value: any) => string) | null;
     id: string;

@@ -128,6 +128,7 @@
     "minimatch": "^3.0.4",
     "minimist": "^1.2.0",
     "moment": "^2.18.1",
+    "sass": "^1.24.4",
     "parse5": "^5.0.0",
     "protractor": "^5.4.2",
     "requirejs": "^2.3.6",

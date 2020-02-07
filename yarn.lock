@@ -7516,7 +7516,6 @@ matchdep@^2.0.0:
     micromatch "^3.0.4"
     resolve "^1.4.0"
     stack-trace "0.0.10"
-
 material-components-web@5.0.0-canary.29b89dbc1.0:
   version "5.0.0-canary.29b89dbc1.0"
   resolved "https://registry.yarnpkg.com/material-components-web/-/material-components-web-5.0.0-canary.29b89dbc1.0.tgz#308a73d88918538b591d7ab0825b6dea88a51b54"
