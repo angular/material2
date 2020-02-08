@@ -394,6 +394,14 @@ describe('MatStepper', () => {
       expect(secondStepContentEl.getAttribute('tabindex')).toBe('0');
     });
 
+    it('should add units to unit-less values passed in to animationDuration', () => {
+      const stepperComponent: MatStepper =
+          fixture.debugElement.query(By.directive(MatStepper))!.componentInstance;
+
+      stepperComponent.animationDuration = '1337';
+      expect(stepperComponent.animationDuration).toBe('1337ms');
+    });
+
   });
 
   describe('basic stepper when attempting to set the selected step too early', () => {

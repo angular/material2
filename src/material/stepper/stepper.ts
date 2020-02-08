@@ -101,6 +101,14 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   /** Whether ripples should be disabled for the step headers. */
   @Input() disableRipple: boolean;
 
+  /** Duration for the animation. Will be normalized to milliseconds if no units are set. */
+  @Input()
+  get animationDuration(): string { return this._animationDuration; }
+  set animationDuration(value: string) {
+    this._animationDuration = /^\d+$/.test(value) ? value + 'ms' : value;
+  }
+  private _animationDuration = '500ms';
+
   /** Consumer-specified template-refs to be used to override the header icons. */
   _iconOverrides: {[key: string]: TemplateRef<MatStepperIconContext>} = {};
 
@@ -194,6 +202,7 @@ export class MatVerticalStepper extends MatStepper {
     @Inject(DOCUMENT) _document?: any) {
     super(dir, changeDetectorRef, elementRef, _document);
     this._orientation = 'vertical';
+    this.animationDuration = '225ms';
   }
 
   static ngAcceptInputType_editable: BooleanInput;
