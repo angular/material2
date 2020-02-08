@@ -53,7 +53,7 @@ export declare abstract class _MatTabGroupBase extends _MatTabGroupMixinBase imp
     constructor(elementRef: ElementRef, _changeDetectorRef: ChangeDetectorRef, defaultConfig?: MatTabsConfig, _animationMode?: string | undefined);
     _focusChanged(index: number): void;
     _getTabContentId(i: number): string;
-    _getTabIndex(tab: MatTab, idx: number): number | null;
+    _getTabIndex(tab: MatTab, index: number): number | null;
     _getTabLabelId(i: number): string;
     _handleClick(tab: MatTab, tabHeader: MatTabGroupBaseHeader, index: number): void;
     _removeTabBodyWrapperHeight(): void;

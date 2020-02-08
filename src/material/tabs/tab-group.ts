@@ -369,11 +369,12 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   }
 
   /** Retrieves the tabindex for the tab. */
-  _getTabIndex(tab: MatTab, idx: number): number | null {
-    if (tab.disabled) {
+  _getTabIndex(tab: MatTab, index: number): number | null {
+    if (tab.disabled || !this._tabHeader) {
       return null;
     }
-    return this.selectedIndex === idx ? 0 : -1;
+
+    return this._tabHeader.focusIndex === index ? 0 : -1;
   }
 
   static ngAcceptInputType_dynamicHeight: BooleanInput;

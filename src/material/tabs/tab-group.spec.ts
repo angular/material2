@@ -1,4 +1,4 @@
-import {LEFT_ARROW} from '@angular/cdk/keycodes';
+import {LEFT_ARROW, RIGHT_ARROW} from '@angular/cdk/keycodes';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from '@angular/cdk/testing/private';
 import {Component, OnInit, QueryList, ViewChild, ViewChildren} from '@angular/core';
 import {async, ComponentFixture, fakeAsync, TestBed, tick} from '@angular/core/testing';
@@ -289,6 +289,22 @@ describe('MatTabGroup', () => {
 
       expect(spy).toHaveBeenCalled();
       subscription.unsubscribe();
+    });
+
+    it('should update the tabindex of the labels when navigating via keyboard', () => {
+      fixture.detectChanges();
+
+      const tabLabels = fixture.debugElement.queryAll(By.css('.mat-tab-label'))
+        .map(label => label.nativeElement);
+      const tabLabelContainer = fixture.debugElement
+        .query(By.css('.mat-tab-label-container')).nativeElement as HTMLElement;
+
+      expect(tabLabels.map(label => label.getAttribute('tabindex'))).toEqual(['0', '-1', '-1']);
+
+      dispatchKeyboardEvent(tabLabelContainer, 'keydown', RIGHT_ARROW);
+      fixture.detectChanges();
+
+      expect(tabLabels.map(label => label.getAttribute('tabindex'))).toEqual(['-1', '0', '-1']);
     });
 
   });
