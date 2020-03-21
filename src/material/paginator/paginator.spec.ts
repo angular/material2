@@ -5,8 +5,14 @@ import {dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {ThemePalette} from '@angular/material/core';
 import {MatSelect} from '@angular/material/select';
 import {By} from '@angular/platform-browser';
-import {MatPaginatorModule, MatPaginator, MatPaginatorIntl} from './index';
-import {MAT_PAGINATOR_DEFAULT_OPTIONS, MatPaginatorDefaultOptions} from './paginator';
+import {
+  MatPaginatorModule,
+  MatPaginator,
+  MatPaginatorIntl,
+  MatPaginatorSelectConfig,
+  MAT_PAGINATOR_DEFAULT_OPTIONS,
+  MatPaginatorDefaultOptions,
+} from './index';
 
 
 describe('MatPaginator', () => {
@@ -184,6 +190,24 @@ describe('MatPaginator', () => {
 
     expect(formField.classList).not.toContain('mat-primary');
     expect(formField.classList).toContain('mat-accent');
+  });
+
+  it('should be able to pass options to the underlying mat-select', () => {
+    const fixture = createComponent(MatPaginatorApp);
+    fixture.detectChanges();
+    const select: MatSelect = fixture.debugElement.query(By.directive(MatSelect)).componentInstance;
+
+    expect(select.disableOptionCentering).toBe(false);
+    expect(select.panelClass).toBeFalsy();
+
+    fixture.componentInstance.selectConfig = {
+      disableOptionCentering: true,
+      panelClass: 'custom-class'
+    };
+    fixture.detectChanges();
+
+    expect(select.disableOptionCentering).toBe(true);
+    expect(select.panelClass).toBe('custom-class');
   });
 
   describe('when showing the first and last button', () => {
@@ -488,6 +512,7 @@ function getLastButton(fixture: ComponentFixture<any>) {
                    [pageSize]="pageSize"
                    [pageSizeOptions]="pageSizeOptions"
                    [hidePageSize]="hidePageSize"
+                   [selectConfig]="selectConfig"
                    [showFirstLastButtons]="showFirstLastButtons"
                    [length]="length"
                    [color]="color"
@@ -506,6 +531,7 @@ class MatPaginatorApp {
   disabled: boolean;
   pageEvent = jasmine.createSpy('page event');
   color: ThemePalette;
+  selectConfig: MatPaginatorSelectConfig = {};
 
   @ViewChild(MatPaginator) paginator: MatPaginator;
 
