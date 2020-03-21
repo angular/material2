@@ -115,6 +115,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   private _offsetY: number;
   private _position: FlexibleConnectedPositionStrategy;
   private _scrollStrategyFactory: () => ScrollStrategy;
+  private _disposeOnNavigation = false;
 
   /** Origin for the connected overlay. */
   @Input('cdkConnectedOverlayOrigin') origin: CdkOverlayOrigin;
@@ -206,6 +207,15 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   @Input('cdkConnectedOverlayPush')
   get push() { return this._push; }
   set push(value: boolean) { this._push = coerceBooleanProperty(value); }
+
+  /**
+   * Whether the overlay should be disposed of when the user goes backwards/forwards in history.
+   */
+  @Input('cdkConnectedOverlayDisposeOnNavigation')
+  get disposeOnNavigation() { return this._disposeOnNavigation; }
+  set disposeOnNavigation(value: boolean) {
+    this._disposeOnNavigation = coerceBooleanProperty(value);
+  }
 
   /** Event emitted when the backdrop is clicked. */
   @Output() backdropClick = new EventEmitter<MouseEvent>();
@@ -299,7 +309,8 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
       direction: this._dir,
       positionStrategy,
       scrollStrategy: this.scrollStrategy,
-      hasBackdrop: this.hasBackdrop
+      hasBackdrop: this.hasBackdrop,
+      disposeOnNavigation: this.disposeOnNavigation
     });
 
     if (this.width || this.width === 0) {
@@ -400,6 +411,7 @@ export class CdkConnectedOverlay implements OnDestroy, OnChanges {
   static ngAcceptInputType_flexibleDimensions: BooleanInput;
   static ngAcceptInputType_growAfterOpen: BooleanInput;
   static ngAcceptInputType_push: BooleanInput;
+  static ngAcceptInputType_disposeOnNavigation: BooleanInput;
 }
 
 
