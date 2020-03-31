@@ -9,7 +9,7 @@
 import {ENTER} from '@angular/cdk/keycodes';
 import {CommonModule} from '@angular/common';
 import {NgModule} from '@angular/core';
-import {ErrorStateMatcher, MatCommonModule, MatRippleModule} from '@angular/material/core';
+import {MatCommonModule, MatRippleModule} from '@angular/material/core';
 import {MatChip, MatChipCssInternalOnly} from './chip';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
 import {MatChipGrid} from './chip-grid';
@@ -40,7 +40,6 @@ const CHIP_DECLARATIONS = [
   exports: CHIP_DECLARATIONS,
   declarations: CHIP_DECLARATIONS,
   providers: [
-    ErrorStateMatcher,
     {
       provide: MAT_CHIPS_DEFAULT_OPTIONS,
       useValue: {
