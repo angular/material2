@@ -21,7 +21,6 @@ import {
   MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER,
 } from './datepicker';
 import {MatDatepickerInput} from './datepicker-input';
-import {MatDatepickerIntl} from './datepicker-intl';
 import {MatDatepickerToggle, MatDatepickerToggleIcon} from './datepicker-toggle';
 import {MatMonthView} from './month-view';
 import {MatMultiYearView} from './multi-year-view';
@@ -64,7 +63,6 @@ import {MatYearView} from './year-view';
     MatCalendarHeader,
   ],
   providers: [
-    MatDatepickerIntl,
     MAT_DATEPICKER_SCROLL_STRATEGY_FACTORY_PROVIDER,
   ],
   entryComponents: [
