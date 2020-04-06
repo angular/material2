@@ -7,7 +7,6 @@
  */
 
 import {EmbeddedViewRef, ElementRef, NgZone, ViewContainerRef, TemplateRef} from '@angular/core';
-import {ViewportRuler} from '@angular/cdk/scrolling';
 import {Direction} from '@angular/cdk/bidi';
 import {normalizePassiveListenerOptions} from '@angular/cdk/platform';
 import {coerceBooleanProperty, coerceElement} from '@angular/cdk/coercion';
@@ -300,7 +299,6 @@ export class DragRef<T = any> {
     private _config: DragRefConfig,
     private _document: Document,
     private _ngZone: NgZone,
-    private _viewportRuler: ViewportRuler,
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>) {
 
     this.withRootElement(element);
@@ -775,7 +773,11 @@ export class DragRef<T = any> {
     this._pointerMoveSubscription = this._dragDropRegistry.pointerMove.subscribe(this._pointerMove);
     this._pointerUpSubscription = this._dragDropRegistry.pointerUp.subscribe(this._pointerUp);
     this._scrollSubscription = this._dragDropRegistry.scroll.pipe(startWith(null)).subscribe(() => {
-      this._scrollPosition = this._viewportRuler.getViewportScrollPosition();
+      // Note that we use the scrollX and scrollY directly, instead of going through the
+      // ViewportRuler, because the first value the ruler looks at is the top/left offset of the
+      // `document.documentElement` which works for most cases, but breaks if the element
+      // is offset by something like the `BlockScrollStrategy`.
+      this._scrollPosition = {top: window.scrollY, left: window.scrollX};
     });
 
     if (this._boundaryElement) {

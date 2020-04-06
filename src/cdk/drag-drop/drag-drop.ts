@@ -27,7 +27,8 @@ export class DragDrop {
   constructor(
     @Inject(DOCUMENT) private _document: any,
     private _ngZone: NgZone,
-    private _viewportRuler: ViewportRuler,
+    // @breaking-change 8.0.0 `_viewportRuler` parameter isn't being used. To be removed.
+    _viewportRuler: ViewportRuler,
     private _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>) {}
 
   /**
@@ -38,8 +39,7 @@ export class DragDrop {
   createDrag<T = any>(element: ElementRef<HTMLElement> | HTMLElement,
                 config: DragRefConfig = DEFAULT_CONFIG): DragRef<T> {
 
-    return new DragRef<T>(element, config, this._document, this._ngZone, this._viewportRuler,
-        this._dragDropRegistry);
+    return new DragRef<T>(element, config, this._document, this._ngZone, this._dragDropRegistry);
   }
 
   /**
@@ -47,7 +47,6 @@ export class DragDrop {
    * @param element Element to which to attach the drop list functionality.
    */
   createDropList<T = any>(element: ElementRef<HTMLElement> | HTMLElement): DropListRef<T> {
-    return new DropListRef<T>(element, this._dragDropRegistry, this._document, this._ngZone,
-        this._viewportRuler);
+    return new DropListRef<T>(element, this._dragDropRegistry, this._document, this._ngZone);
   }
 }

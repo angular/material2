@@ -2338,6 +2338,22 @@ describe('CdkDrag', () => {
       }));
     }));
 
+    it('should sort correctly if the <html> node has been offset', fakeAsync(() => {
+      const documentElement = document.documentElement!;
+      const fixture = createComponent(DraggableInDropZone);
+      fixture.detectChanges();
+
+      documentElement.style.position = 'absolute';
+      documentElement.style.top = '-100px';
+
+      assertDownwardSorting(fixture, fixture.componentInstance.dragItems.map(item => {
+        return item.element.nativeElement;
+      }));
+
+      documentElement.style.position = '';
+      documentElement.style.top = '';
+    }));
+
     it('should move the placeholder as an item is being sorted down on a scrolled page',
       fakeAsync(() => {
         const fixture = createComponent(DraggableInDropZone);

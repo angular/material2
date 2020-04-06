@@ -294,7 +294,7 @@ export declare class DragRef<T = any> {
     started: Subject<{
         source: DragRef<any>;
     }>;
-    constructor(element: ElementRef<HTMLElement> | HTMLElement, _config: DragRefConfig, _document: Document, _ngZone: NgZone, _viewportRuler: ViewportRuler, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>);
+    constructor(element: ElementRef<HTMLElement> | HTMLElement, _config: DragRefConfig, _document: Document, _ngZone: NgZone, _dragDropRegistry: DragDropRegistry<DragRef, DropListRef>);
     _sortFromLastPointerPosition(): void;
     _withDropContainer(container: DropListRef): void;
     disableHandle(handle: HTMLElement): void;
