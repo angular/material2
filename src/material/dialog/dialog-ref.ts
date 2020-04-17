@@ -8,8 +8,8 @@
 
 import {ESCAPE, hasModifierKey} from '@angular/cdk/keycodes';
 import {GlobalPositionStrategy, OverlayRef} from '@angular/cdk/overlay';
-import {Observable, Subject} from 'rxjs';
-import {filter, take} from 'rxjs/operators';
+import {Observable, Subject, race, of} from 'rxjs';
+import {filter, take, map, delay, mapTo} from 'rxjs/operators';
 import {DialogPosition} from './dialog-config';
 import {MatDialogContainer} from './dialog-container';
 
@@ -44,9 +44,6 @@ export class MatDialogRef<T, R = any> {
   /** Result to be passed to afterClosed. */
   private _result: R | undefined;
 
-  /** Handle to the timeout that's running as a fallback in case the exit animation doesn't fire. */
-  private _closeFallbackTimeout: number;
-
   /** Current state of the dialog. */
   private _state = MatDialogState.OPEN;
 
@@ -73,7 +70,6 @@ export class MatDialogRef<T, R = any> {
       filter(event => event.phaseName === 'done' && event.toState === 'exit'),
       take(1)
     ).subscribe(() => {
-      clearTimeout(this._closeFallbackTimeout);
       this._overlayRef.dispose();
     });
 
@@ -116,25 +112,40 @@ export class MatDialogRef<T, R = any> {
       filter(event => event.phaseName === 'start'),
       take(1)
     )
-    .subscribe(event => {
+    .subscribe(() => {
       this._beforeClosed.next(dialogResult);
       this._beforeClosed.complete();
       this._state = MatDialogState.CLOSED;
       this._overlayRef.detachBackdrop();
-
-      // The logic that disposes of the overlay depends on the exit animation completing, however
-      // it isn't guaranteed if the parent view is destroyed while it's running. Add a fallback
-      // timeout which will clean everything up if the animation hasn't fired within the specified
-      // amount of time plus 100ms. We don't need to run this outside the NgZone, because for the
-      // vast majority of cases the timeout will have been cleared before it has the chance to fire.
-      this._closeFallbackTimeout = setTimeout(() => {
-        this._overlayRef.dispose();
-      }, event.totalTime + 100);
     });
 
     this._containerInstance._startExitAnimation();
     this._state = MatDialogState.CLOSING;
-  }
+
+    // The logic that disposes of the overlay depends on the exit animation completing, however
+    // it isn't guaranteed if the parent view is destroyed before that event. Add a fallback
+    // observer which will clean everything up if the animation hasn't completed within a specified
+    // amount of time plus 100ms.
+    race(
+      this._containerInstance._animationStateChanged
+      .pipe(
+        filter(event => event.phaseName === 'done' && event.toState === 'exit'),
+        map(event => event.totalTime)
+      ),
+      of(null)
+        .pipe(delay(200), mapTo(200)) // 200ms = estimated animation time of 100ms + 100ms
+    )
+    .pipe(
+      take(1)
+    )
+    .subscribe(() => {
+      // Checks if the overlay still exists after assumed animation time has elapsed
+      if (this._overlayRef.hasAttached()) {
+        // Dispose of overlay assuming animation has not completed in time
+        this._overlayRef.dispose();
+      }
+    });
+   }
 
   /**
    * Gets an observable that is notified when the dialog is finished opening.
