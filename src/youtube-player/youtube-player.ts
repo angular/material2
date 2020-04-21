@@ -118,6 +118,24 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
   }
   private _height = new BehaviorSubject<number>(DEFAULT_PLAYER_HEIGHT);
 
+  /** PlayerVars of video player */
+  @Input()
+  get controls(): YT.Controls | undefined { return this._playerVars.value.controls; }
+  set controls(controls: YT.Controls | undefined) {
+    this._playerVars.next({ ...this._playerVars.value, controls } || {});
+  }
+  @Input()
+  get autoplay(): YT.AutoPlay | undefined { return this._playerVars.value.autoplay; }
+  set autoplay(autoplay: YT.AutoPlay | undefined) {
+    this._playerVars.next({ ...this._playerVars.value, autoplay } || {});
+  }
+  @Input()
+  get disablekb(): YT.KeyboardControls | undefined { return this._playerVars.value.disablekb; }
+  set disablekb(disablekb: YT.KeyboardControls | undefined) {
+    this._playerVars.next({ ...this._playerVars.value, disablekb } || {});
+  }
+  private _playerVars = new BehaviorSubject<YT.PlayerVars>({});
+
   /** Width of video player */
   @Input()
   get width(): number | undefined { return this._width.value; }
@@ -184,7 +202,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
     // @breaking-change 10.0.0 Remove null check for `platformId`.
     this._isBrowser =
-        platformId ? isPlatformBrowser(platformId) : typeof window === 'object' && !!window;
+      platformId ? isPlatformBrowser(platformId) : typeof window === 'object' && !!window;
   }
 
   ngOnInit() {
@@ -221,6 +239,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
         iframeApiAvailableObs,
         this._width,
         this._height,
+        this._playerVars,
         this.createEventsBoundInZone(),
         this._ngZone
       ).pipe(waitUntilReady(player => {
@@ -290,6 +309,7 @@ export class YouTubePlayer implements AfterViewInit, OnDestroy, OnInit {
 
     this._videoId.complete();
     this._height.complete();
+    this._playerVars.complete();
     this._width.complete();
     this._startSeconds.complete();
     this._endSeconds.complete();
@@ -550,10 +570,10 @@ function bindSuggestedQualityToPlayer(
  * it was able to complete. Can be used to clean up any loose references.
  */
 function waitUntilReady(onAbort: (player: UninitializedPlayer) => void):
-  OperatorFunction<UninitializedPlayer | undefined, Player | undefined> {
+  OperatorFunction<UninitializedPlayer|undefined, Player | undefined> {
   return flatMap(player => {
     if (!player) {
-      return observableOf<Player|undefined>(undefined);
+      return observableOf<Player | undefined>(undefined);
     }
     if (playerIsReady(player)) {
       return observableOf(player as Player);
@@ -593,6 +613,7 @@ function createPlayerObservable(
   iframeApiAvailableObs: Observable<boolean>,
   widthObs: Observable<number>,
   heightObs: Observable<number>,
+  playerVarsObs: Observable<YT.PlayerVars>,
   events: YT.Events,
   ngZone: NgZone
 ): Observable<UninitializedPlayer | undefined> {
@@ -600,15 +621,16 @@ function createPlayerObservable(
   const playerOptions =
     videoIdObs
     .pipe(
-      withLatestFrom(combineLatest([widthObs, heightObs])),
-      map(([videoId, [width, height]]) => videoId ? ({videoId, width, height, events}) : undefined),
+      withLatestFrom(combineLatest([widthObs, heightObs, playerVarsObs])),
+      map(([videoId, [width, height, playerVars]]) => 
+          videoId ? ({ videoId, width, height, playerVars, events }) : undefined),
     );
 
   return combineLatest([youtubeContainer, playerOptions, of(ngZone)])
-      .pipe(
-        skipUntilRememberLatest(iframeApiAvailableObs),
-        scan(syncPlayerState, undefined),
-        distinctUntilChanged());
+  .pipe(
+    skipUntilRememberLatest(iframeApiAvailableObs),
+    scan(syncPlayerState, undefined),
+    distinctUntilChanged());
 }
 
 /** Skips the given observable until the other observable emits true, then emit the latest. */
@@ -657,7 +679,7 @@ function bindCueVideoCall(
   destroyed: Observable<void>,
 ) {
   const cueOptionsObs = combineLatest([startSecondsObs, endSecondsObs])
-    .pipe(map(([startSeconds, endSeconds]) => ({startSeconds, endSeconds})));
+    .pipe(map(([startSeconds, endSeconds]) => ({ startSeconds, endSeconds })));
 
   // Only respond to changes in cue options if the player is not running.
   const filteredCueOptions = cueOptionsObs
