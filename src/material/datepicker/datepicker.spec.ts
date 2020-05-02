@@ -8,6 +8,7 @@ import {
   dispatchFakeEvent,
   dispatchKeyboardEvent,
   dispatchMouseEvent,
+  typeInElement,
 } from '@angular/cdk/testing/private';
 import {Component, Type, ViewChild, Provider} from '@angular/core';
 import {ComponentFixture, fakeAsync, flush, inject, TestBed, tick} from '@angular/core/testing';
@@ -918,6 +919,18 @@ describe('MatDatepicker', () => {
           expect(spy).toHaveBeenCalledTimes(1);
           subscription.unsubscribe();
         }));
+
+      it('should set the matDatepickerParse error when an invalid value is ' +
+        'typed for the first time', () => {
+          const formControl = fixture.componentInstance.formControl;
+
+          expect(formControl.hasError('matDatepickerParse')).toBe(false);
+
+          typeInElement(fixture.nativeElement.querySelector('input'), 'Today');
+          fixture.detectChanges();
+
+          expect(formControl.hasError('matDatepickerParse')).toBe(true);
+        });
 
     });
 

@@ -338,13 +338,20 @@ export class MatDatepickerInput<D> implements ControlValueAccessor, OnDestroy, A
     this._lastValueValid = !date || this._dateAdapter.isValid(date);
     date = this._getValidDateOrNull(date);
 
-    if (!this._dateAdapter.sameDate(date, this._value)) {
-      this._value = date;
+    const hasChanged = !this._dateAdapter.sameDate(date, this._value);
+
+    // We need to fire the CVA change event for all
+    // nulls, otherwise the validators won't run.
+    if (!date || hasChanged) {
       this._cvaOnChange(date);
-      this._valueChange.emit(date);
       this.dateInput.emit(new MatDatepickerInputEvent(this, this._elementRef.nativeElement));
     } else if (lastValueWasValid !== this._lastValueValid) {
       this._validatorOnChange();
+    }
+
+    if (hasChanged) {
+      this._value = date;
+      this._valueChange.emit(date);
     }
   }
 
