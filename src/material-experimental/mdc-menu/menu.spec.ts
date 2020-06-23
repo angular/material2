@@ -687,7 +687,7 @@ describe('MDC-based MatMenu', () => {
     fixture.detectChanges();
     const triggerEl = fixture.componentInstance.triggerEl.nativeElement;
 
-    expect(triggerEl.hasAttribute('aria-expanded')).toBe(false);
+    expect(triggerEl.getAttribute('aria-expanded')).toBe('false');
 
     fixture.componentInstance.trigger.openMenu();
     fixture.detectChanges();
@@ -697,7 +697,7 @@ describe('MDC-based MatMenu', () => {
     fixture.componentInstance.trigger.closeMenu();
     fixture.detectChanges();
 
-    expect(triggerEl.hasAttribute('aria-expanded')).toBe(false);
+    expect(triggerEl.getAttribute('aria-expanded')).toBe('false');
   });
 
   it('should throw the correct error if the menu is not defined after init', () => {
