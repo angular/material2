@@ -65,6 +65,23 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   exitDuration: numbers.FG_DEACTIVATION_MS
 };
 
+class RadioAdapter implements MDCRadioAdapter {
+  constructor(private readonly _delegate: MatRadioButton) {}
+  addClass(className: string) {
+    return this._delegate.setClass(className, true);
+  }
+  removeClass(className: string) {
+    return this._delegate.setClass(className, false);
+  }
+  setNativeControlDisabled(disabled: boolean) {
+    if (this._delegate.disabled !== disabled) {
+      this._delegate.disabled = disabled;
+      this._delegate.getChangeDetector().markForCheck();
+    }
+  }
+}
+
+
 /**
  * A group of radio buttons. May contain one or more `<mat-radio-button>` elements.
  */
@@ -112,21 +129,12 @@ export class MatRadioGroup extends _MatRadioGroupBase<MatRadioButton> {
 })
 export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit, OnDestroy {
 
-  private _radioAdapter: MDCRadioAdapter = {
-    addClass: (className: string) => this._setClass(className, true),
-    removeClass: (className: string) => this._setClass(className, false),
-    setNativeControlDisabled: (disabled: boolean) => {
-      if (this.disabled !== disabled) {
-        this.disabled = disabled;
-        this._changeDetector.markForCheck();
-      }
-    },
-  };
+  private _radioAdapter: MDCRadioAdapter;
 
   /** Configuration for the underlying ripple. */
   _rippleAnimation: RippleAnimationConfig = RIPPLE_ANIMATION_CONFIG;
 
-  _radioFoundation = new MDCRadioFoundation(this._radioAdapter);
+  _radioFoundation: MDCRadioFoundation;
   _classes: {[key: string]: boolean} = {};
 
   constructor(@Optional() @Inject(MAT_RADIO_GROUP) radioGroup: MatRadioGroup,
@@ -139,6 +147,8 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
               _providerOverride?: MatRadioDefaultOptions) {
     super(radioGroup, elementRef, _changeDetector, _focusMonitor,
         _radioDispatcher, _animationMode, _providerOverride);
+    this._radioAdapter = new RadioAdapter(this);
+    this._radioFoundation = new MDCRadioFoundation(this._radioAdapter);
   }
 
   ngAfterViewInit() {
@@ -151,9 +161,13 @@ export class MatRadioButton extends _MatRadioButtonBase implements AfterViewInit
     this._radioFoundation.destroy();
   }
 
-  private _setClass(cssClass: string, active: boolean) {
+  setClass(cssClass: string, active: boolean) {
     this._classes = {...this._classes, [cssClass]: active};
     this._changeDetector.markForCheck();
+  }
+
+  getChangeDetector() {
+    return this._changeDetector;
   }
 
   /**
