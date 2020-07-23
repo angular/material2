@@ -31,6 +31,7 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     readonly removed: EventEmitter<MatChipEvent>;
     rippleConfig: RippleConfig & RippleGlobalOptions;
     get rippleDisabled(): boolean;
+    role: string;
     get selectable(): boolean;
     set selectable(value: boolean);
     get selected(): boolean;
@@ -56,7 +57,7 @@ export declare class MatChip extends _MatChipMixinBase implements FocusableOptio
     static ngAcceptInputType_removable: BooleanInput;
     static ngAcceptInputType_selectable: BooleanInput;
     static ngAcceptInputType_selected: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChip, "mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]", ["matChip"], { "color": "color"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "selected": "selected"; "value": "value"; "selectable": "selectable"; "disabled": "disabled"; "removable": "removable"; }, { "selectionChange": "selectionChange"; "destroyed": "destroyed"; "removed": "removed"; }, ["avatar", "trailingIcon", "removeIcon"]>;
+    static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatChip, "mat-basic-chip, [mat-basic-chip], mat-chip, [mat-chip]", ["matChip"], { "color": "color"; "disableRipple": "disableRipple"; "tabIndex": "tabIndex"; "role": "role"; "selected": "selected"; "value": "value"; "selectable": "selectable"; "disabled": "disabled"; "removable": "removable"; }, { "selectionChange": "selectionChange"; "destroyed": "destroyed"; "removed": "removed"; }, ["avatar", "trailingIcon", "removeIcon"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatChip, [null, null, null, { optional: true; }, { optional: true; }, null, { attribute: "tabindex"; }, { optional: true; }]>;
 }
 
@@ -144,6 +145,7 @@ export declare class MatChipList extends _MatChipListMixinBase implements MatFor
     get required(): boolean;
     set required(value: boolean);
     get role(): string | null;
+    set role(role: string | null);
     get selectable(): boolean;
     set selectable(value: boolean);
     get selected(): MatChip[] | MatChip;
@@ -178,7 +180,7 @@ export declare class MatChipList extends _MatChipListMixinBase implements MatFor
     static ngAcceptInputType_multiple: BooleanInput;
     static ngAcceptInputType_required: BooleanInput;
     static ngAcceptInputType_selectable: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatChipList, "mat-chip-list", ["matChipList"], { "errorStateMatcher": "errorStateMatcher"; "multiple": "multiple"; "compareWith": "compareWith"; "value": "value"; "required": "required"; "placeholder": "placeholder"; "disabled": "disabled"; "ariaOrientation": "aria-orientation"; "selectable": "selectable"; "tabIndex": "tabIndex"; }, { "change": "change"; "valueChange": "valueChange"; }, ["chips"], ["*"]>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatChipList, "mat-chip-list", ["matChipList"], { "role": "role"; "errorStateMatcher": "errorStateMatcher"; "multiple": "multiple"; "compareWith": "compareWith"; "value": "value"; "required": "required"; "placeholder": "placeholder"; "disabled": "disabled"; "ariaOrientation": "aria-orientation"; "selectable": "selectable"; "tabIndex": "tabIndex"; }, { "change": "change"; "valueChange": "valueChange"; }, ["chips"], ["*"]>;
     static ɵfac: i0.ɵɵFactoryDef<MatChipList, [null, null, { optional: true; }, { optional: true; }, { optional: true; }, null, { optional: true; self: true; }]>;
 }
 

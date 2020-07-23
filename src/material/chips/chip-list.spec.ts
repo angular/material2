@@ -171,6 +171,13 @@ describe('MatChipList', () => {
         expect(chipListNativeElement.hasAttribute('role')).toBe(false);
         expect(chipListNativeElement.hasAttribute('aria-required')).toBe(false);
       });
+
+      it('should be able to set a custom role', () => {
+        fixture.componentInstance.chipList.role = 'grid';
+        fixture.detectChanges();
+
+        expect(chipListNativeElement.getAttribute('role')).toBe('grid');
+      });
     });
 
     describe('focus behaviors', () => {
@@ -1566,9 +1573,9 @@ class FalsyValueChipList {
 @Component({
   template: `
     <mat-chip-list>
-        <mat-chip *ngFor="let food of foods" [value]="food.value" [selected]="food.selected">
-            {{ food.viewValue }}
-        </mat-chip>
+      <mat-chip *ngFor="let food of foods" [value]="food.value" [selected]="food.selected">
+        {{ food.viewValue }}
+      </mat-chip>
     </mat-chip-list>
   `
 })
@@ -1579,6 +1586,7 @@ class SelectedChipList {
     {value: 2, viewValue: 'Pasta', selected: true},
   ];
   @ViewChildren(MatChip) chips: QueryList<MatChip>;
+  @ViewChild(MatChipList, {static: false}) chipList: MatChipList;
 }
 
 @Component({

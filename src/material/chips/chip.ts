@@ -130,7 +130,7 @@ export class MatChipTrailingIcon {}
   host: {
     'class': 'mat-chip mat-focus-indicator',
     '[attr.tabindex]': 'disabled ? null : tabIndex',
-    'role': 'option',
+    '[attr.role]': 'role',
     '[class.mat-chip-selected]': 'selected',
     '[class.mat-chip-with-avatar]': 'avatar',
     '[class.mat-chip-with-trailing-icon]': 'trailingIcon || removeIcon',
@@ -200,6 +200,9 @@ export class MatChip extends _MatChipMixinBase implements FocusableOption, OnDes
   // TODO: Remove cast once https://github.com/angular/angular/pull/37506 is available.
   /** The chip's remove toggler. */
   @ContentChild(MAT_CHIP_REMOVE as any) removeIcon: MatChipRemove;
+
+  /** ARIA role that should be applied to the chip. */
+  @Input() role: string = 'option';
 
   /** Whether the chip is selected. */
   @Input()
