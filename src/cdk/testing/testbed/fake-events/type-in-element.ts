@@ -6,7 +6,7 @@
  * found in the LICENSE file at https://angular.io/license
  */
 
-import {ModifierKeys} from '@angular/cdk/testing';
+import {getNoKeysSpecifiedError, ModifierKeys} from '@angular/cdk/testing';
 import {dispatchFakeEvent, dispatchKeyboardEvent} from './dispatch-events';
 import {triggerFocus} from './element-focus';
 
@@ -20,7 +20,7 @@ export function isTextInput(element: Element): element is HTMLInputElement | HTM
 }
 
 /**
- * Focuses an input, sets its value and dispatches
+ * If keys have been specified, focuses an input, sets its value and dispatches
  * the `input` event, simulating the user typing.
  * @param element Element onto which to set the value.
  * @param keys The keys to send to the element.
@@ -30,7 +30,7 @@ export function typeInElement(
     element: HTMLElement, ...keys: (string | {keyCode?: number, key?: string})[]): void;
 
 /**
- * Focuses an input, sets its value and dispatches
+ * If keys have been specified, focuses an input, sets its value and dispatches
  * the `input` event, simulating the user typing.
  * @param element Element onto which to set the value.
  * @param modifiers Modifier keys that are held while typing.
@@ -40,11 +40,12 @@ export function typeInElement(
 export function typeInElement(element: HTMLElement, modifiers: ModifierKeys,
                               ...keys: (string | {keyCode?: number, key?: string})[]): void;
 
-export function typeInElement(element: HTMLElement, ...modifiersAndKeys: any) {
+export function typeInElement(element: HTMLElement, ...modifiersAndKeys: any[]) {
   const first = modifiersAndKeys[0];
   let modifiers: ModifierKeys;
   let rest: (string | {keyCode?: number, key?: string})[];
-  if (typeof first !== 'string' && first.keyCode === undefined && first.key === undefined) {
+  if (first !== undefined && typeof first !== 'string' && first.keyCode === undefined &&
+      first.key === undefined) {
     modifiers = first;
     rest = modifiersAndKeys.slice(1);
   } else {
@@ -55,6 +56,12 @@ export function typeInElement(element: HTMLElement, ...modifiersAndKeys: any) {
       .map(k => typeof k === 'string' ?
           k.split('').map(c => ({keyCode: c.toUpperCase().charCodeAt(0), key: c})) : [k])
       .reduce((arr, k) => arr.concat(k), []);
+
+  // Throw an error if no keys have been specified. Calling this function with no
+  // keys should not result in a focus event being dispatched unexpectedly.
+  if (keys.length === 0) {
+    throw getNoKeysSpecifiedError();
+  }
 
   triggerFocus(element);
   for (const key of keys) {

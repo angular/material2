@@ -42,6 +42,8 @@ export interface ElementDimensions {
     width: number;
 }
 
+export declare function getNoKeysSpecifiedError(): Error;
+
 export declare abstract class HarnessEnvironment<E> implements HarnessLoader, LocatorFactory {
     protected rawRootElement: E;
     rootElement: TestElement;

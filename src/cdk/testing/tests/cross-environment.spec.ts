@@ -9,6 +9,7 @@
 import {
   ComponentHarness,
   ComponentHarnessConstructor,
+  getNoKeysSpecifiedError,
   HarnessLoader,
   TestElement,
 } from '@angular/cdk/testing';
@@ -303,6 +304,17 @@ export function crossEnvironmentSpecs(
       harness = await getMainComponentHarnessFromEnvironment();
     });
 
+    async function expectAsyncError(fn: () => Promise<void>, expected: Error) {
+      let error: Error|null = null;
+      try {
+        await fn();
+      } catch (e) {
+        error = e;
+      }
+      expect(error).not.toBe(null);
+      expect(error!.message).toBe(expected.message);
+    }
+
     it('should be able to clear', async () => {
       const input = await harness.input();
       await input.sendKeys('Yi');
@@ -310,6 +322,13 @@ export function crossEnvironmentSpecs(
 
       await input.clear();
       expect(await input.getProperty('value')).toBe('');
+    });
+
+    it('sendKeys method should throw if no keys have been specified', async () => {
+      const input = await harness.input();
+      await expectAsyncError(() => input.sendKeys(), getNoKeysSpecifiedError());
+      await expectAsyncError(() => input.sendKeys(''), getNoKeysSpecifiedError());
+      await expectAsyncError(() => input.sendKeys('', ''), getNoKeysSpecifiedError());
     });
 
     it('should be able to click', async () => {
