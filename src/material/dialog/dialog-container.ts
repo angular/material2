@@ -65,7 +65,13 @@ export function throwMatDialogContentAlreadyAttachedError() {
     '[attr.aria-labelledby]': '_config.ariaLabel ? null : _ariaLabelledBy',
     '[attr.aria-label]': '_config.ariaLabel',
     '[attr.aria-describedby]': '_config.ariaDescribedBy || null',
-    '[@dialogContainer]': '_state',
+    '[@dialogContainer]': `{
+      value: _state,
+      params: {
+        enterAnimationDuration: _config.enterAnimationDuration,
+        exitAnimationDuration: _config.exitAnimationDuration
+      }
+    }`,
     '(@dialogContainer.start)': '_onAnimationStart($event)',
     '(@dialogContainer.done)': '_onAnimationDone($event)',
   },

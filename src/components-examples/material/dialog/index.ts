@@ -17,6 +17,10 @@ import {
   DialogOverviewExample,
   DialogOverviewExampleDialog
 } from './dialog-overview/dialog-overview-example';
+import {
+  DialogAnimationsExample,
+  DialogAnimationsExampleDialog
+} from './dialog-animations/dialog-animations-example';
 
 export {
   DialogContentExample,
@@ -27,6 +31,8 @@ export {
   DialogElementsExampleDialog,
   DialogOverviewExample,
   DialogOverviewExampleDialog,
+  DialogAnimationsExample,
+  DialogAnimationsExampleDialog,
 };
 
 const EXAMPLES = [
@@ -38,6 +44,8 @@ const EXAMPLES = [
   DialogElementsExampleDialog,
   DialogOverviewExample,
   DialogOverviewExampleDialog,
+  DialogAnimationsExample,
+  DialogAnimationsExampleDialog,
 ];
 
 @NgModule({

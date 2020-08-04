@@ -74,6 +74,8 @@ export declare class MatDialogConfig<D = any> {
     data?: D | null;
     direction?: Direction;
     disableClose?: boolean;
+    enterAnimationDuration?: string;
+    exitAnimationDuration?: string;
     hasBackdrop?: boolean;
     height?: string;
     id?: string;

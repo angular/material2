@@ -1679,6 +1679,8 @@ describe('MatDialog with default options', () => {
       minHeight: '50px',
       maxWidth: '150px',
       maxHeight: '150px',
+      enterAnimationDuration: '100ms',
+      exitAnimationDuration: '50ms',
       autoFocus: false,
     };
 
