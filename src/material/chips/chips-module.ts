@@ -8,7 +8,6 @@
 
 import {ENTER} from '@angular/cdk/keycodes';
 import {NgModule} from '@angular/core';
-import {ErrorStateMatcher} from '@angular/material/core';
 import {MatChip, MatChipAvatar, MatChipRemove, MatChipTrailingIcon} from './chip';
 import {MAT_CHIPS_DEFAULT_OPTIONS, MatChipsDefaultOptions} from './chip-default-options';
 import {MatChipInput} from './chip-input';
@@ -27,7 +26,6 @@ const CHIP_DECLARATIONS = [
   exports: CHIP_DECLARATIONS,
   declarations: CHIP_DECLARATIONS,
   providers: [
-    ErrorStateMatcher,
     {
       provide: MAT_CHIPS_DEFAULT_OPTIONS,
       useValue: {

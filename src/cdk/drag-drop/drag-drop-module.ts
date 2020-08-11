@@ -14,7 +14,6 @@ import {CdkDrag} from './directives/drag';
 import {CdkDragHandle} from './directives/drag-handle';
 import {CdkDragPreview} from './directives/drag-preview';
 import {CdkDragPlaceholder} from './directives/drag-placeholder';
-import {DragDrop} from './drag-drop';
 
 @NgModule({
   declarations: [
@@ -34,8 +33,5 @@ import {DragDrop} from './drag-drop';
     CdkDragPreview,
     CdkDragPlaceholder,
   ],
-  providers: [
-    DragDrop,
-  ]
 })
 export class DragDropModule {}

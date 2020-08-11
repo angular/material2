@@ -207,6 +207,5 @@ export class CdkObserveContent implements AfterContentInit, OnDestroy {
 @NgModule({
   exports: [CdkObserveContent],
   declarations: [CdkObserveContent],
-  providers: [MutationObserverFactory]
 })
 export class ObserversModule {}
