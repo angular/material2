@@ -516,6 +516,29 @@ describe('MatAutocomplete', () => {
       expect(input.getAttribute('aria-haspopup')).toBe('false');
     });
 
+    it('should close the panel when pressing escape', fakeAsync(() => {
+      const trigger = fixture.componentInstance.trigger;
+
+      input.focus();
+      flush();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(input, 'Expected input to be focused.');
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to be open.');
+
+      trigger.closePanel();
+      fixture.detectChanges();
+
+      expect(document.activeElement).toBe(input, 'Expected input to continue to be focused.');
+      expect(trigger.panelOpen).toBe(false, 'Expected panel to be closed.');
+
+      input.click();
+      flush();
+      fixture.detectChanges();
+
+      expect(trigger.panelOpen).toBe(true, 'Expected panel to reopen on click.');
+    }));
+
   });
 
   it('should not close the panel when clicking on the input', fakeAsync(() => {

@@ -119,6 +119,7 @@ export function getMatAutocompleteMissingPanelError(): Error {
     '(blur)': '_onTouched()',
     '(input)': '_handleInput($event)',
     '(keydown)': '_handleKeydown($event)',
+    '(click)': 'openPanel()',
   },
   exportAs: 'matAutocompleteTrigger',
   providers: [MAT_AUTOCOMPLETE_VALUE_ACCESSOR]
@@ -262,8 +263,10 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
 
   /** Opens the autocomplete suggestion panel. */
   openPanel(): void {
-    this._attachOverlay();
-    this._floatLabel();
+    if (!this.panelOpen) {
+      this._attachOverlay();
+      this._floatLabel();
+    }
   }
 
   /** Closes the autocomplete suggestion panel. */
