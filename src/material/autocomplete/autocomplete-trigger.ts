@@ -406,15 +406,16 @@ export class MatAutocompleteTrigger implements ControlValueAccessor, AfterViewIn
       event.preventDefault();
     } else if (this.autocomplete) {
       const prevActiveItem = this.autocomplete._keyManager.activeItem;
-      const isArrowKey = keyCode === UP_ARROW || keyCode === DOWN_ARROW;
+      const isVerticalArrowKey = keyCode === UP_ARROW || keyCode === DOWN_ARROW;
+      const hasModifier = event.ctrlKey || event.altKey || event.metaKey || event.shiftKey;
 
-      if (this.panelOpen || keyCode === TAB) {
+      if ((isVerticalArrowKey && !hasModifier) || keyCode === TAB) {
         this.autocomplete._keyManager.onKeydown(event);
-      } else if (isArrowKey && this._canOpen()) {
+      } else if (isVerticalArrowKey && this._canOpen()) {
         this.openPanel();
       }
 
-      if (isArrowKey || this.autocomplete._keyManager.activeItem !== prevActiveItem) {
+      if (isVerticalArrowKey || this.autocomplete._keyManager.activeItem !== prevActiveItem) {
         this._scrollToOption();
       }
     }
