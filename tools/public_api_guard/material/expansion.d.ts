@@ -78,8 +78,9 @@ export declare class MatExpansionPanelActionRow {
 }
 
 export declare class MatExpansionPanelContent {
+    _expansionPanel?: MatExpansionPanelBase | undefined;
     _template: TemplateRef<any>;
-    constructor(_template: TemplateRef<any>);
+    constructor(_template: TemplateRef<any>, _expansionPanel?: MatExpansionPanelBase | undefined);
     static ɵdir: i0.ɵɵDirectiveDefWithMeta<MatExpansionPanelContent, "ng-template[matExpansionPanelContent]", never, {}, {}, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatExpansionPanelContent, never>;
 }

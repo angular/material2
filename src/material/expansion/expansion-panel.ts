@@ -40,6 +40,7 @@ import {filter, startWith, take, distinctUntilChanged} from 'rxjs/operators';
 import {matExpansionAnimations} from './expansion-animations';
 import {MatExpansionPanelContent} from './expansion-panel-content';
 import {MAT_ACCORDION, MatAccordionBase, MatAccordionTogglePosition} from './accordion-base';
+import {MAT_EXPANSION_PANEL} from './expansion-panel-base';
 
 /** MatExpansionPanel's states. */
 export type MatExpansionPanelState = 'expanded' | 'collapsed';
@@ -89,6 +90,7 @@ export const MAT_EXPANSION_PANEL_DEFAULT_OPTIONS =
     // Provide MatAccordion as undefined to prevent nested expansion panels from registering
     // to the same accordion.
     {provide: MAT_ACCORDION, useValue: undefined},
+    {provide: MAT_EXPANSION_PANEL, useExisting: MatExpansionPanel}
   ],
   host: {
     'class': 'mat-expansion-panel',
@@ -208,7 +210,7 @@ export class MatExpansionPanel extends CdkAccordionItem implements AfterContentI
   }
 
   ngAfterContentInit() {
-    if (this._lazyContent) {
+    if (this._lazyContent && this._lazyContent._expansionPanel === this) {
       // Render the content as soon as the panel becomes open.
       this.opened.pipe(
         startWith(null!),
