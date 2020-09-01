@@ -78,6 +78,11 @@ import {
   getTableUnknownDataSourceError
 } from './table-errors';
 import {CDK_TABLE} from './tokens';
+import {
+  _DefaultTableLayoutStrategy,
+  _TABLE_LAYOUT_STRATEGY,
+  _TableLayoutStrategy
+} from './table-layout-strategy';
 
 /** Interface used to provide an outlet for rows to be inserted into. */
 export interface RowOutlet {
@@ -450,7 +455,9 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
       // Optional for backwards compatibility, but a view repeater strategy will always
       // be provided.
       @Optional() @Inject(_VIEW_REPEATER_STRATEGY)
-      protected readonly _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>) {
+      protected readonly _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>,
+      @Optional() @Inject(_TABLE_LAYOUT_STRATEGY)
+      private readonly _layoutStrategy: _TableLayoutStrategy|null) {
     if (!role) {
       this._elementRef.nativeElement.setAttribute('role', 'grid');
     }
@@ -461,10 +468,7 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
 
   ngOnInit() {
     this._setupStickyStyler();
-
-    if (this._isNativeHtmlTable) {
-      this._applyNativeTableSections();
-    }
+    this._initTableLayout();
 
     // Set up the trackBy function so that it uses the `RenderRow` as its identity by default. If
     // the user has provided a custom trackBy, return the result of that function as evaluated
@@ -1056,28 +1060,14 @@ export class CdkTable<T> implements AfterContentChecked, CollectionViewer, OnDes
     });
   }
 
-  /** Adds native table sections (e.g. tbody) and moves the row outlets into them. */
-  private _applyNativeTableSections() {
-    const documentFragment = this._document.createDocumentFragment();
-    const sections = [
-      {tag: 'thead', outlets: [this._headerRowOutlet]},
-      {tag: 'tbody', outlets: [this._rowOutlet, this._noDataRowOutlet]},
-      {tag: 'tfoot', outlets: [this._footerRowOutlet]},
-    ];
-
-    for (const section of sections) {
-      const element = this._document.createElement(section.tag);
-      element.setAttribute('role', 'rowgroup');
-
-      for (const outlet of section.outlets) {
-        element.appendChild(outlet.elementRef.nativeElement);
-      }
-
-      documentFragment.appendChild(element);
-    }
+  private _initTableLayout() {
+    const layoutStrategy = this._layoutStrategy || new _DefaultTableLayoutStrategy(this._document);
+    const layout = this._isNativeHtmlTable
+        ? layoutStrategy.getNativeLayout(this)
+        : layoutStrategy.getFlexLayout(this);
 
     // Use a DocumentFragment so we don't hit the DOM on each iteration.
-    this._elementRef.nativeElement.appendChild(documentFragment);
+    this._elementRef.nativeElement.appendChild(layout);
   }
 
   /**

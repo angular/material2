@@ -41,6 +41,7 @@ entryPoints = [
     "mdc-tabs/testing",
     "menubar",
     "popover-edit",
+    "scrollable-table-body",
     "selection",
 ]
 
