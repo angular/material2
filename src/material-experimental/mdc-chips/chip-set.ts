@@ -31,6 +31,47 @@ import {MatChip, MatChipEvent} from './chip';
 
 let uid = 0;
 
+/** @docs-private */
+export class ChipSetAdapter implements MDCChipSetAdapter {
+
+  constructor(private _delegate: MatChipSet) {}
+
+  hasClass(className: string) {
+    return this._delegate._hasMdcClass(className);
+  }
+
+  // No-op. We keep track of chips via ContentChildren, which will be updated when a chip is
+  // removed.
+  removeChipAtIndex() {
+    return;
+  }
+
+  // No-op for base chip set. MatChipListbox overrides the adapter to provide this method.
+  selectChipAtIndex() {
+    return;
+  }
+
+  getIndexOfChipById(id: string) {
+    return this._delegate._chips.toArray().findIndex(chip => chip.id === id);
+  }
+
+  focusChipPrimaryActionAtIndex() {}
+
+  focusChipTrailingActionAtIndex() {}
+
+  removeFocusFromChipAtIndex() {}
+
+  isRTL() {
+    return !!this._delegate._dir && this._delegate._dir.value === 'rtl';
+  }
+
+  getChipListCount() {
+    return this._delegate._chips.length;
+  }
+
+  // TODO(mmalerba): Implement using LiveAnnouncer.
+  announceMessage() {}
+}
 
 /**
  * Boilerplate for applying mixins to MatChipSet.
@@ -90,22 +131,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
    * Implementation of the MDC chip-set adapter interface.
    * These methods are called by the chip set foundation.
    */
-  protected _chipSetAdapter: MDCChipSetAdapter = {
-    hasClass: (className) => this._hasMdcClass(className),
-    // No-op. We keep track of chips via ContentChildren, which will be updated when a chip is
-    // removed.
-    removeChipAtIndex: () => {},
-    // No-op for base chip set. MatChipListbox overrides the adapter to provide this method.
-    selectChipAtIndex: () => {},
-    getIndexOfChipById: (id: string) => this._chips.toArray().findIndex(chip => chip.id === id),
-    focusChipPrimaryActionAtIndex: () => {},
-    focusChipTrailingActionAtIndex: () => {},
-    removeFocusFromChipAtIndex: () => {},
-    isRTL: () => !!this._dir && this._dir.value === 'rtl',
-    getChipListCount: () => this._chips.length,
-    // TODO(mmalerba): Implement using LiveAnnouncer.
-    announceMessage: () => {},
-  };
+  protected _chipSetAdapter: MDCChipSetAdapter;
 
   /** The aria-describedby attribute on the chip list for improved a11y. */
   _ariaDescribedby: string;
@@ -161,9 +187,9 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
 
   constructor(protected _elementRef: ElementRef,
               protected _changeDetectorRef: ChangeDetectorRef,
-              @Optional() protected _dir: Directionality) {
+              @Optional() readonly _dir: Directionality) {
     super(_elementRef);
-    this._chipSetFoundation = new MDCChipSetFoundation(this._chipSetAdapter);
+    this._chipSetFoundation = new MDCChipSetFoundation(new ChipSetAdapter(this));
   }
 
   ngAfterViewInit() {
@@ -214,7 +240,7 @@ export class MatChipSet extends _MatChipSetMixinBase implements AfterContentInit
   }
 
   /** Adapter method that returns true if the chip set has the given MDC class. */
-  protected _hasMdcClass(className: string) {
+  _hasMdcClass(className: string) {
     return this._elementRef.nativeElement.classList.contains(className);
   }
 
