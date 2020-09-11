@@ -1,14 +1,10 @@
-import {waitForAsync, TestBed, fakeAsync, tick} from '@angular/core/testing';
+import {dispatchFakeEvent, dispatchMouseEvent} from '@angular/cdk/testing/private';
 import {Component, QueryList, ViewChildren} from '@angular/core';
-import {defaultRippleAnimationConfig} from '@angular/material/core';
-import {dispatchMouseEvent} from '@angular/cdk/testing/private';
+import {fakeAsync, TestBed, waitForAsync} from '@angular/core/testing';
 import {By} from '@angular/platform-browser';
 import {MatListItem, MatListModule} from './index';
 
 describe('MDC-based MatList', () => {
-  // Default ripple durations used for testing.
-  const {enterDuration, exitDuration} = defaultRippleAnimationConfig;
-
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
       imports: [MatListModule],
@@ -230,11 +226,15 @@ describe('MDC-based MatList', () => {
       dispatchMouseEvent(rippleTarget, 'mousedown');
       dispatchMouseEvent(rippleTarget, 'mouseup');
 
+      // Flush the ripple enter animation.
+      dispatchFakeEvent(rippleTarget.querySelector('.mat-ripple-element')!, 'transitionend');
+
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .toBe(1, 'Expected ripples to be enabled by default.');
 
-      // Wait for the ripples to go away.
-      tick(enterDuration + exitDuration);
+      // Flush the ripple exit animation.
+      dispatchFakeEvent(rippleTarget.querySelector('.mat-ripple-element')!, 'transitionend');
+
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .toBe(0, 'Expected ripples to go away.');
 
@@ -258,11 +258,15 @@ describe('MDC-based MatList', () => {
       dispatchMouseEvent(rippleTarget, 'mousedown');
       dispatchMouseEvent(rippleTarget, 'mouseup');
 
+      // Flush the ripple enter animation.
+      dispatchFakeEvent(rippleTarget.querySelector('.mat-ripple-element')!, 'transitionend');
+
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .toBe(1, 'Expected ripples to be enabled by default.');
 
-      // Wait for the ripples to go away.
-      tick(enterDuration + exitDuration);
+      // Flush the ripple exit animation.
+      dispatchFakeEvent(rippleTarget.querySelector('.mat-ripple-element')!, 'transitionend');
+
       expect(rippleTarget.querySelectorAll('.mat-ripple-element').length)
         .toBe(0, 'Expected ripples to go away.');
 

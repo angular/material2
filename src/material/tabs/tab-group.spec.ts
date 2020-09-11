@@ -176,7 +176,6 @@ describe('MatTabGroup', () => {
         .toBe(0, 'Expected no ripples to show up initially.');
 
       dispatchFakeEvent(tabLabel.nativeElement, 'mousedown');
-      dispatchFakeEvent(tabLabel.nativeElement, 'mouseup');
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
         .toBe(1, 'Expected one ripple to show up on label mousedown.');
@@ -193,7 +192,6 @@ describe('MatTabGroup', () => {
         .toBe(0, 'Expected no ripples to show up initially.');
 
       dispatchFakeEvent(tabLabel.nativeElement, 'mousedown');
-      dispatchFakeEvent(tabLabel.nativeElement, 'mouseup');
 
       expect(testElement.querySelectorAll('.mat-ripple-element').length)
         .toBe(0, 'Expected no ripple to show up on label mousedown.');
