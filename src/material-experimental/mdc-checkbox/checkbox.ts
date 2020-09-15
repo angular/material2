@@ -78,6 +78,55 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   exitDuration: numbers.FG_DEACTIVATION_MS,
 };
 
+/** @docs-private */
+class CheckboxAdapter implements MDCCheckboxAdapter {
+  constructor(private readonly _delegate: MatCheckbox) {}
+
+  addClass(className: string) {
+    return this._delegate._setClass(className, true);
+  }
+
+  removeClass(className: string) {
+    return this._delegate._setClass(className, false);
+  }
+
+  forceLayout() {
+    return this._delegate._checkbox.nativeElement.offsetWidth;
+  }
+
+  hasNativeControl() {
+    return !!this._delegate._nativeCheckbox;
+  }
+
+  isAttachedToDOM() {
+    return !!this._delegate._checkbox.nativeElement.parentNode;
+  }
+
+  isChecked() {
+    return this._delegate.checked;
+  }
+
+  isIndeterminate() {
+    return this._delegate.indeterminate;
+  }
+
+  removeNativeControlAttr(attr: string)  {
+    if (!this._delegate._attrBlocklist.has(attr)) {
+      this._delegate._nativeCheckbox.nativeElement.removeAttribute(attr);
+    }
+  }
+
+  setNativeControlAttr(attr: string, value: string)  {
+    if (!this._delegate._attrBlocklist.has(attr)) {
+      this._delegate._nativeCheckbox.nativeElement.setAttribute(attr, value);
+    }
+  }
+
+  setNativeControlDisabled(disabled: boolean) {
+    this._delegate.disabled = disabled;
+  }
+}
+
 @Component({
   selector: 'mat-checkbox',
   templateUrl: 'checkbox.html',
@@ -217,31 +266,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit,
    * MDC uses animation events to determine when to update `aria-checked` which is unreliable.
    * Therefore we disable it and handle it ourselves.
    */
-  private _attrBlacklist = new Set(['aria-checked']);
-
-  /** The `MDCCheckboxAdapter` instance for this checkbox. */
-  private _checkboxAdapter: MDCCheckboxAdapter = {
-    addClass: (className) => this._setClass(className, true),
-    removeClass: (className) => this._setClass(className, false),
-    forceLayout: () => this._checkbox.nativeElement.offsetWidth,
-    hasNativeControl: () => !!this._nativeCheckbox,
-    isAttachedToDOM: () => !!this._checkbox.nativeElement.parentNode,
-    isChecked: () => this.checked,
-    isIndeterminate: () => this.indeterminate,
-    removeNativeControlAttr:
-        (attr) => {
-          if (!this._attrBlacklist.has(attr)) {
-            this._nativeCheckbox.nativeElement.removeAttribute(attr);
-          }
-        },
-    setNativeControlAttr:
-        (attr, value) => {
-          if (!this._attrBlacklist.has(attr)) {
-            this._nativeCheckbox.nativeElement.setAttribute(attr, value);
-          }
-        },
-    setNativeControlDisabled: (disabled) => this.disabled = disabled,
-  };
+  readonly _attrBlocklist: ReadonlySet<string> = new Set(['aria-checked']);
 
   constructor(
       private _changeDetectorRef: ChangeDetectorRef,
@@ -260,7 +285,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit,
     // Note: We don't need to set up the MDCFormFieldFoundation. Its only purpose is to manage the
     // ripple, which we do ourselves instead.
     this.tabIndex = parseInt(tabIndex) || 0;
-    this._checkboxFoundation = new MDCCheckboxFoundation(this._checkboxAdapter);
+    this._checkboxFoundation = new MDCCheckboxFoundation(new CheckboxAdapter(this));
 
     this._options = this._options || {};
 
@@ -387,7 +412,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements AfterViewInit,
   }
 
   /** Sets whether the given CSS class should be applied to the native input. */
-  private _setClass(cssClass: string, active: boolean) {
+  _setClass(cssClass: string, active: boolean) {
     this._classes[cssClass] = active;
     this._changeDetectorRef.markForCheck();
   }
