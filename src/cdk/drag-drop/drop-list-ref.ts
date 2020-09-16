@@ -123,6 +123,7 @@ export class DropListRef<T = any> {
     previousContainer: DropListRef,
     isPointerOverContainer: boolean,
     distance: Point;
+    event: MouseEvent | TouchEvent;
   }>();
 
   /** Emits as the user is swapping items while actively dragging. */
@@ -345,10 +346,11 @@ export class DropListRef<T = any> {
    * @param distance Distance the user has dragged since the start of the dragging sequence.
    * @param previousIndex Index of the item when dragging started.
    *
-   * @breaking-change 11.0.0 `previousIndex` parameter to become required.
+   * @breaking-change 11.0.0 `previousIndex` and `event` parameters to become required.
    */
   drop(item: DragRef, currentIndex: number, previousContainer: DropListRef,
-    isPointerOverContainer: boolean, distance: Point, previousIndex?: number): void {
+    isPointerOverContainer: boolean, distance: Point, previousIndex?: number,
+    event: MouseEvent | TouchEvent = {} as any): void {
     this._reset();
 
     // @breaking-change 11.0.0 Remove this fallback logic once `previousIndex` is a required param.
@@ -362,7 +364,8 @@ export class DropListRef<T = any> {
       container: this,
       previousContainer,
       isPointerOverContainer,
-      distance
+      distance,
+      event
     });
   }
 

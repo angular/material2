@@ -257,13 +257,13 @@ export class DragRef<T = any> {
   beforeStarted = new Subject<void>();
 
   /** Emits when the user starts dragging the item. */
-  started = new Subject<{source: DragRef}>();
+  started = new Subject<{source: DragRef, event: MouseEvent | TouchEvent}>();
 
   /** Emits when the user has released a drag item, before any animations have started. */
-  released = new Subject<{source: DragRef}>();
+  released = new Subject<{source: DragRef, event: MouseEvent | TouchEvent}>();
 
   /** Emits when the user stops dragging an item in the container. */
-  ended = new Subject<{source: DragRef, distance: Point}>();
+  ended = new Subject<{source: DragRef, distance: Point, event: MouseEvent | TouchEvent}>();
 
   /** Emits when the user has moved the item into a new container. */
   entered = new Subject<{container: DropListRef, item: DragRef, currentIndex: number}>();
@@ -280,6 +280,7 @@ export class DragRef<T = any> {
     previousContainer: DropListRef;
     distance: Point;
     isPointerOverContainer: boolean;
+    event: MouseEvent | TouchEvent;
   }>();
 
   /**
@@ -680,7 +681,7 @@ export class DragRef<T = any> {
       return;
     }
 
-    this.released.next({source: this});
+    this.released.next({source: this, event});
 
     if (this._dropContainer) {
       // Stop scrolling immediately, instead of waiting for the animation to finish.
@@ -699,7 +700,8 @@ export class DragRef<T = any> {
       this._ngZone.run(() => {
         this.ended.next({
           source: this,
-          distance: this._getDragDistance(this._getPointerPositionOnPage(event))
+          distance: this._getDragDistance(this._getPointerPositionOnPage(event)),
+          event
         });
       });
       this._cleanupCachedDimensions();
@@ -733,12 +735,12 @@ export class DragRef<T = any> {
       element.style.display = 'none';
       this._document.body.appendChild(parent.replaceChild(placeholder, element));
       getPreviewInsertionPoint(this._document).appendChild(preview);
-      this.started.next({source: this}); // Emit before notifying the container.
+      this.started.next({source: this, event}); // Emit before notifying the container.
       dropContainer.start();
       this._initialContainer = dropContainer;
       this._initialIndex = dropContainer.getItemIndex(this);
     } else {
-      this.started.next({source: this});
+      this.started.next({source: this, event});
       this._initialContainer = this._initialIndex = undefined!;
     }
 
@@ -841,7 +843,7 @@ export class DragRef<T = any> {
       const isPointerOverContainer = container._isOverContainer(
         pointerPosition.x, pointerPosition.y);
 
-      this.ended.next({source: this, distance});
+      this.ended.next({source: this, distance, event});
       this.dropped.next({
         item: this,
         currentIndex,
@@ -849,7 +851,8 @@ export class DragRef<T = any> {
         container: container,
         previousContainer: this._initialContainer,
         isPointerOverContainer,
-        distance
+        distance,
+        event
       });
       container.drop(this, currentIndex, this._initialContainer, isPointerOverContainer, distance,
           this._initialIndex);
