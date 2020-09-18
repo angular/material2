@@ -46,7 +46,9 @@ information to create the necessary `ComponentFactory` for your dialog content c
 
 For any component loaded into a dialog, you must include your component class in the list of
 `entryComponents` in your NgModule definition so that the Angular compiler knows to create
-the `ComponentFactory` for it.
+the `ComponentFactory` for it. 
+This is only necessary when using the older compiler and runtime known as View Engine.
+`entryComponents` is redundant when using Ivy which is the new compilation and rendering pipeline for Angular. Ivy is used by default.
 
 ```ts
 @NgModule({
