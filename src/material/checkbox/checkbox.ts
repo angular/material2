@@ -244,8 +244,9 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
   @Input()
   get checked(): boolean { return this._checked; }
   set checked(value: boolean) {
-    if (value != this.checked) {
-      this._checked = value;
+    const checked = coerceBooleanProperty(value);
+    if (checked != this.checked) {
+      this._checked = checked;
       this._changeDetectorRef.markForCheck();
     }
   }
@@ -490,6 +491,7 @@ export class MatCheckbox extends _MatCheckboxMixinBase implements ControlValueAc
     }
   }
 
+  static ngAcceptInputType_checked: BooleanInput;
   static ngAcceptInputType_disabled: BooleanInput;
   static ngAcceptInputType_required: BooleanInput;
   static ngAcceptInputType_disableRipple: BooleanInput;

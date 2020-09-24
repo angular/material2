@@ -49,6 +49,7 @@ export declare class MatCheckbox extends _MatCheckboxMixinBase implements Contro
     setDisabledState(isDisabled: boolean): void;
     toggle(): void;
     writeValue(value: any): void;
+    static ngAcceptInputType_checked: BooleanInput;
     static ngAcceptInputType_disableRipple: BooleanInput;
     static ngAcceptInputType_disabled: BooleanInput;
     static ngAcceptInputType_indeterminate: BooleanInput;
