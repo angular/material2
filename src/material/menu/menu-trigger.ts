@@ -58,9 +58,6 @@ export const MAT_MENU_SCROLL_STRATEGY_FACTORY_PROVIDER = {
   useFactory: MAT_MENU_SCROLL_STRATEGY_FACTORY,
 };
 
-/** Default top padding of the menu panel. */
-export const MENU_PANEL_TOP_PADDING = 8;
-
 /** Options for binding a passive event listener. */
 const passiveEventListenerOptions = normalizePassiveListenerOptions({passive: true});
 
@@ -88,6 +85,12 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
   private _hoverSubscription = Subscription.EMPTY;
   private _menuCloseSubscription = Subscription.EMPTY;
   private _scrollStrategy: () => ScrollStrategy;
+
+  /**
+   * Cached value of the padding of the parent menu panel.
+   * Used to offset sub-menus to compensate for the padding.
+   */
+  private _parentInnerPadding: number | undefined;
 
   /**
    * Handles touch start events on the trigger.
@@ -453,11 +456,18 @@ export class MatMenuTrigger implements AfterContentInit, OnDestroy {
     let offsetY = 0;
 
     if (this.triggersSubmenu()) {
+      // console.log(this._parentMenu.items.first._getHostElement().offsetTop);
       // When the menu is a sub-menu, it should always align itself
       // to the edges of the trigger, instead of overlapping it.
       overlayFallbackX = originX = this.menu.xPosition === 'before' ? 'start' : 'end';
       originFallbackX = overlayX = originX === 'end' ? 'start' : 'end';
-      offsetY = overlayY === 'bottom' ? MENU_PANEL_TOP_PADDING : -MENU_PANEL_TOP_PADDING;
+
+      if (this._parentInnerPadding == null) {
+        const firstSibling = this._parentMenu.items.first;
+        this._parentInnerPadding = firstSibling ? firstSibling._getHostElement().offsetTop : 0;
+      }
+
+      offsetY = overlayY === 'bottom' ? this._parentInnerPadding : -this._parentInnerPadding;
     } else if (!this.menu.overlapTrigger) {
       originY = overlayY === 'top' ? 'bottom' : 'top';
       originFallbackY = overlayFallbackY === 'top' ? 'bottom' : 'top';

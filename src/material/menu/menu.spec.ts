@@ -43,8 +43,9 @@ import {
   MenuPositionX,
   MenuPositionY,
 } from './index';
-import {MAT_MENU_SCROLL_STRATEGY, MENU_PANEL_TOP_PADDING} from './menu-trigger';
+import {MAT_MENU_SCROLL_STRATEGY} from './menu-trigger';
 
+const MENU_PANEL_TOP_PADDING = 8;
 
 describe('MatMenu', () => {
   let overlayContainer: OverlayContainer;
@@ -1885,6 +1886,26 @@ describe('MatMenu', () => {
       expect(Math.round(triggerRect.right)).toBe(Math.round(panelRect.left));
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
     }));
+
+    it('should account for custom padding when offsetting the sub-menu', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.style.position = 'fixed';
+      instance.rootTriggerEl.nativeElement.style.left = '75px';
+      instance.rootTriggerEl.nativeElement.style.top = '75px';
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      // Change the padding to something different from the default.
+      (overlay.querySelector('.mat-menu-content') as HTMLElement).style.padding = '15px 0';
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.cdk-overlay-pane')[1].getBoundingClientRect();
+
+      expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + 15);
+    });
 
     it('should close all of the menus when an item is clicked', fakeAsync(() => {
       compileTestComponent();

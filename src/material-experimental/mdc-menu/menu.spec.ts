@@ -1899,6 +1899,26 @@ describe('MDC-based MatMenu', () => {
       expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + MENU_PANEL_TOP_PADDING);
     }));
 
+    it('should account for custom padding when offsetting the sub-menu', () => {
+      compileTestComponent();
+      instance.rootTriggerEl.nativeElement.style.position = 'fixed';
+      instance.rootTriggerEl.nativeElement.style.left = '75px';
+      instance.rootTriggerEl.nativeElement.style.top = '75px';
+      instance.rootTrigger.openMenu();
+      fixture.detectChanges();
+
+      // Change the padding to something different from the default.
+      (overlay.querySelector('.mat-mdc-menu-content') as HTMLElement).style.padding = '15px 0';
+
+      instance.levelOneTrigger.openMenu();
+      fixture.detectChanges();
+
+      const triggerRect = overlay.querySelector('#level-one-trigger')!.getBoundingClientRect();
+      const panelRect = overlay.querySelectorAll('.cdk-overlay-pane')[1].getBoundingClientRect();
+
+      expect(Math.round(triggerRect.top)).toBe(Math.round(panelRect.top) + 15);
+    });
+
     it('should close all of the menus when an item is clicked', fakeAsync(() => {
       compileTestComponent();
       instance.rootTriggerEl.nativeElement.click();
