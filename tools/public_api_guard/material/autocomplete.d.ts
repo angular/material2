@@ -43,7 +43,7 @@ export declare abstract class _MatAutocompleteOriginBase {
     static ɵfac: i0.ɵɵFactoryDef<_MatAutocompleteOriginBase, never>;
 }
 
-export declare abstract class _MatAutocompleteTriggerBase implements ControlValueAccessor, AfterViewInit, OnChanges, OnDestroy {
+export declare abstract class _MatAutocompleteTriggerBase implements ControlValueAccessor, AfterViewInit, AfterContentChecked, OnChanges, OnDestroy {
     protected abstract _aboveClass: string;
     _onChange: (value: any) => void;
     _onTouched: () => void;
@@ -62,6 +62,7 @@ export declare abstract class _MatAutocompleteTriggerBase implements ControlValu
     _handleInput(event: KeyboardEvent): void;
     _handleKeydown(event: KeyboardEvent): void;
     closePanel(): void;
+    ngAfterContentChecked(): void;
     ngAfterViewInit(): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnDestroy(): void;
