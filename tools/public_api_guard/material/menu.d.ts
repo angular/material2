@@ -110,7 +110,7 @@ export declare class MatMenuItem extends _MatMenuItemMixinBase implements Focusa
     _getHostElement(): HTMLElement;
     _getTabIndex(): string;
     _handleMouseEnter(): void;
-    focus(origin?: FocusOrigin, options?: FocusOptions): void;
+    focus(origin?: NonNullable<FocusOrigin>, options?: FocusOptions): void;
     getLabel(): string;
     ngAfterViewInit(): void;
     ngOnDestroy(): void;
@@ -165,7 +165,7 @@ export declare class MatMenuTrigger implements AfterContentInit, OnDestroy {
     _handleKeydown(event: KeyboardEvent): void;
     _handleMousedown(event: MouseEvent): void;
     closeMenu(): void;
-    focus(origin?: FocusOrigin, options?: FocusOptions): void;
+    focus(origin?: NonNullable<FocusOrigin>, options?: FocusOptions): void;
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     openMenu(): void;
