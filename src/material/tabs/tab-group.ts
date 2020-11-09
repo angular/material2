@@ -151,6 +151,14 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
   @Input()
   disablePagination: boolean;
 
+  /**
+   * By default tabs remove their content from the DOM while it's off-screen.
+   * Setting this to `true` will keep it in the DOM which will prevent elements
+   * like iframes and videos from reloading next time it comes back into the view.
+   */
+  @Input()
+  preserveContent: boolean;
+
   /** Background color of the tab group. */
   @Input()
   get backgroundColor(): ThemePalette { return this._backgroundColor; }
@@ -196,6 +204,7 @@ export abstract class _MatTabGroupBase extends _MatTabGroupMixinBase implements 
     this.dynamicHeight = defaultConfig && defaultConfig.dynamicHeight != null ?
         defaultConfig.dynamicHeight : false;
     this.contentTabIndex = defaultConfig?.contentTabIndex ?? null;
+    this.preserveContent = !!defaultConfig?.preserveContent;
   }
 
   /**
