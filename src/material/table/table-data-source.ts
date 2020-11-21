@@ -115,7 +115,12 @@ export class MatTableDataSource<T> extends DataSource<T> {
    * @param data Data object that is being accessed.
    * @param sortHeaderId The name of the column that represents the data.
    */
-  sortingDataAccessor: ((data: T, sortHeaderId: string) => string|number) =
+  get sortingDataAccessor() { return this._sortingDataAccessor; }
+  set sortingDataAccessor(value: (data: T, sortHeaderId: string) => string|number) {
+    this._sortingDataAccessor = value;
+    this._updateChangeSubscription();
+  }
+  private _sortingDataAccessor: ((data: T, sortHeaderId: string) => string|number) =
       (data: T, sortHeaderId: string): string|number => {
     const value = (data as {[key: string]: any})[sortHeaderId];
 
