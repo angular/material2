@@ -152,8 +152,9 @@ export class MatStepper extends CdkStepper implements AfterContentInit {
   inputs: ['selectedIndex'],
   host: {
     'class': 'mat-stepper-horizontal',
-    '[class.mat-stepper-label-position-end]': 'labelPosition == "end"',
-    '[class.mat-stepper-label-position-bottom]': 'labelPosition == "bottom"',
+    '[class.mat-stepper-label-position-end]': 'labelPosition === "end"',
+    '[class.mat-stepper-label-position-bottom]': 'labelPosition === "bottom"',
+    '[class.mat-stepper-header-position-bottom]': 'headerPosition === "bottom"',
     'aria-orientation': 'horizontal',
     'role': 'tablist',
   },
@@ -169,6 +170,10 @@ export class MatHorizontalStepper extends MatStepper {
   /** Whether the label should display in bottom or end position. */
   @Input()
   labelPosition: 'bottom' | 'end' = 'end';
+
+  /** Position of the stepper's header. */
+  @Input()
+  headerPosition: 'top' | 'bottom' = 'top';
 
   static ngAcceptInputType_editable: BooleanInput;
   static ngAcceptInputType_optional: BooleanInput;
