@@ -20,7 +20,7 @@ import {
   Output,
   AfterViewInit,
 } from '@angular/core';
-import {Observable, of as observableOf, Subject, Subscription} from 'rxjs';
+import {Observable, of as observableOf, Subject, Subscription, Observer} from 'rxjs';
 import {coerceElement} from '@angular/cdk/coercion';
 import {DOCUMENT} from '@angular/common';
 import {
@@ -72,7 +72,8 @@ export const FOCUS_MONITOR_DEFAULT_OPTIONS =
 type MonitoredElementInfo = {
   checkChildren: boolean,
   readonly subject: Subject<FocusOrigin>,
-  rootNode: HTMLElement|ShadowRoot|Document
+  rootNode: HTMLElement|ShadowRoot|Document,
+  observable: Observable<FocusOrigin>
 };
 
 /**
@@ -260,15 +261,28 @@ export class FocusMonitor implements OnDestroy {
     }
 
     // Create monitored element info.
+    const subject = new Subject<FocusOrigin>();
     const info: MonitoredElementInfo = {
       checkChildren: checkChildren,
-      subject: new Subject<FocusOrigin>(),
-      rootNode
+      subject,
+      rootNode,
+      // Note that we want the observable to emit inside the NgZone, however we don't want to
+      // trigger change detection if nobody has subscribed to it. We do so by creating the
+      // observable manually.
+      observable: new Observable((observer: Observer<FocusOrigin>) => {
+        const subscription = subject.subscribe(origin => {
+          this._ngZone.run(() => observer.next(origin));
+        });
+
+        return () => {
+          subscription.unsubscribe();
+        };
+      })
     };
     this._elementInfo.set(nativeElement, info);
     this._registerGlobalListeners(info);
 
-    return info.subject;
+    return info.observable;
   }
 
   /**
@@ -474,11 +488,7 @@ export class FocusMonitor implements OnDestroy {
     }
 
     this._setClasses(element);
-    this._emitOrigin(elementInfo.subject, null);
-  }
-
-  private _emitOrigin(subject: Subject<FocusOrigin>, origin: FocusOrigin) {
-    this._ngZone.run(() => subject.next(origin));
+    elementInfo.subject.next(null);
   }
 
   private _registerGlobalListeners(elementInfo: MonitoredElementInfo) {
@@ -560,7 +570,7 @@ export class FocusMonitor implements OnDestroy {
   private _originChanged(element: HTMLElement, origin: FocusOrigin,
                          elementInfo: MonitoredElementInfo) {
     this._setClasses(element, origin);
-    this._emitOrigin(elementInfo.subject, origin);
+    elementInfo.subject.next(origin);
     this._lastFocusOrigin = origin;
   }
 
