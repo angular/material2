@@ -218,6 +218,7 @@ export interface DragDropConfig extends Partial<DragRefConfig> {
     listOrientation?: DropListOrientation;
     lockAxis?: DragAxis;
     previewClass?: string | string[];
+    propagateEvents?: boolean;
     rootElementSelector?: string;
     sortingDisabled?: boolean;
     zIndex?: number;
@@ -322,6 +323,7 @@ export declare class DragRef<T = any> {
 export interface DragRefConfig {
     dragStartThreshold: number;
     pointerDirectionChangeThreshold: number;
+    propagateEvents?: boolean;
     zIndex?: number;
 }
 
