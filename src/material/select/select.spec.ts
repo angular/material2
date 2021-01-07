@@ -50,6 +50,7 @@ import {
   NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
   Validators,
+  FormBuilder,
 } from '@angular/forms';
 import {
   ErrorStateMatcher,
@@ -133,6 +134,7 @@ describe('MatSelect', () => {
         SelectWithGroupsAndNgContainer,
         SelectWithFormFieldLabel,
         SelectWithChangeEvent,
+        SelectInsideDynamicFormGroup,
       ]);
     }));
 
@@ -1999,6 +2001,20 @@ describe('MatSelect', () => {
         expect(fixture.componentInstance.select.panelOpen)
             .toBe(true, `Expected select panelOpen property to become true.`);
       }));
+
+      it('should keep the disabled state in sync if the form group is swapped and ' +
+        'disabled at the same time', fakeAsync(() => {
+          const fixture = TestBed.createComponent(SelectInsideDynamicFormGroup);
+          fixture.detectChanges();
+          const instance = fixture.componentInstance;
+
+          expect(instance.select.disabled).toBe(false);
+
+          instance.assignGroup(true);
+          fixture.detectChanges();
+
+          expect(instance.select.disabled).toBe(true);
+        }));
     });
 
     describe('animations', () => {
@@ -5507,3 +5523,29 @@ class SelectWithResetOptionAndFormControl {
   `
 })
 class SelectInNgContainer {}
+
+@Component({
+  template: `
+    <form [formGroup]="form">
+      <mat-form-field>
+        <mat-select formControlName="control">
+          <mat-option value="1">One</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+  `
+})
+class SelectInsideDynamicFormGroup {
+  @ViewChild(MatSelect) select: MatSelect;
+  form: FormGroup;
+
+  constructor(private _formBuilder: FormBuilder) {
+    this.assignGroup(false);
+  }
+
+  assignGroup(isDisabled: boolean) {
+    this.form = this._formBuilder.group({
+      control: {value: '', disabled: isDisabled}
+    });
+  }
+}
