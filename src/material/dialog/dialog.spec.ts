@@ -800,6 +800,26 @@ describe('MatDialog', () => {
       expect(resolver.resolveComponentFactory).toHaveBeenCalled();
     }));
 
+  it('should close the correct dialog when stacked and using a template from another dialog',
+    fakeAsync(() => {
+      const dialogRef = dialog.open(MixedTypeStackedDialog);
+      viewContainerFixture.detectChanges();
+
+      dialogRef.componentInstance.open();
+      viewContainerFixture.detectChanges();
+
+      expect(overlayContainerElement.textContent).toContain('Bottom');
+      expect(overlayContainerElement.textContent).toContain('Top');
+
+      (overlayContainerElement.querySelector('.close') as HTMLButtonElement).click();
+      flushMicrotasks();
+      viewContainerFixture.detectChanges();
+      tick(500);
+
+      expect(overlayContainerElement.textContent).toContain('Bottom');
+      expect(overlayContainerElement.textContent).not.toContain('Top');
+    }));
+
   describe('passing in data', () => {
     it('should be able to pass in data', () => {
       let config = {
@@ -1981,6 +2001,25 @@ class DialogWithoutFocusableElements {}
 })
 class ShadowDomComponent {}
 
+@Component({
+  template: `
+    Bottom
+    <ng-template>
+      Top
+      <button class="close" mat-dialog-close>Close</button>
+    </ng-template>
+  `,
+})
+class MixedTypeStackedDialog {
+  @ViewChild(TemplateRef) template: TemplateRef<any>;
+
+  constructor(private _dialog: MatDialog) {}
+
+  open() {
+    this._dialog.open(this.template);
+  }
+}
+
 // Create a real (non-test) NgModule as a workaround for
 // https://github.com/angular/angular/issues/10760
 const TEST_DIRECTIVES = [
@@ -1994,6 +2033,7 @@ const TEST_DIRECTIVES = [
   DialogWithoutFocusableElements,
   ComponentWithContentElementTemplateRef,
   ShadowDomComponent,
+  MixedTypeStackedDialog,
 ];
 
 @NgModule({
@@ -2007,6 +2047,7 @@ const TEST_DIRECTIVES = [
     ContentElementDialog,
     DialogWithInjectedData,
     DialogWithoutFocusableElements,
+    MixedTypeStackedDialog,
   ],
 })
 class DialogTestModule { }

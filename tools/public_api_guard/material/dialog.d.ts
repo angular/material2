@@ -89,12 +89,12 @@ export declare class MatDialogClose implements OnInit, OnChanges {
     dialogResult: any;
     type: 'submit' | 'button' | 'reset';
     constructor(
-    dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
+    _dialogRef: any, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
     _onButtonClick(event: MouseEvent): void;
     ngOnChanges(changes: SimpleChanges): void;
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatDialogClose, "[mat-dialog-close], [matDialogClose]", ["matDialogClose"], { "ariaLabel": "aria-label"; "type": "type"; "dialogResult": "mat-dialog-close"; "_matDialogClose": "matDialogClose"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatDialogClose, [{ optional: true; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatDialogClose, never>;
 }
 
 export declare class MatDialogConfig<D = any> {
@@ -172,10 +172,11 @@ export declare const enum MatDialogState {
 
 export declare class MatDialogTitle implements OnInit {
     id: string;
-    constructor(_dialogRef: MatDialogRef<any>, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
+    constructor(
+    _dialogRef: any, _elementRef: ElementRef<HTMLElement>, _dialog: MatDialog);
     ngOnInit(): void;
     static ɵdir: i0.ɵɵDirectiveDeclaration<MatDialogTitle, "[mat-dialog-title], [matDialogTitle]", ["matDialogTitle"], { "id": "id"; }, {}, never>;
-    static ɵfac: i0.ɵɵFactoryDeclaration<MatDialogTitle, [{ optional: true; }, null, null]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<MatDialogTitle, never>;
 }
 
 export declare function throwMatDialogContentAlreadyAttachedError(): void;
