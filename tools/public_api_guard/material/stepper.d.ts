@@ -7,12 +7,13 @@ export declare const MAT_STEPPER_INTL_PROVIDER: {
 export declare function MAT_STEPPER_INTL_PROVIDER_FACTORY(parentIntl: MatStepperIntl): MatStepperIntl;
 
 export declare class MatHorizontalStepper extends MatStepper {
+    headerPosition: 'top' | 'bottom';
     labelPosition: 'bottom' | 'end';
     static ngAcceptInputType_completed: BooleanInput;
     static ngAcceptInputType_editable: BooleanInput;
     static ngAcceptInputType_hasError: BooleanInput;
     static ngAcceptInputType_optional: BooleanInput;
-    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatHorizontalStepper, "mat-horizontal-stepper", ["matHorizontalStepper"], { "selectedIndex": "selectedIndex"; "labelPosition": "labelPosition"; }, {}, never, never>;
+    static ɵcmp: i0.ɵɵComponentDefWithMeta<MatHorizontalStepper, "mat-horizontal-stepper", ["matHorizontalStepper"], { "selectedIndex": "selectedIndex"; "labelPosition": "labelPosition"; "headerPosition": "headerPosition"; }, {}, never, never>;
     static ɵfac: i0.ɵɵFactoryDef<MatHorizontalStepper, never>;
 }
 
