@@ -708,16 +708,12 @@ describe('MatCheckbox', () => {
     }));
   });
 
-  describe('aria-label', () => {
-    let checkboxDebugElement: DebugElement;
-    let checkboxNativeElement: HTMLElement;
-    let inputElement: HTMLInputElement;
-
+  describe('aria handling', () => {
     it('should use the provided aria-label', () => {
       fixture = createComponent(CheckboxWithAriaLabel);
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
-      checkboxNativeElement = checkboxDebugElement.nativeElement;
-      inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
+      const checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      const checkboxNativeElement = checkboxDebugElement.nativeElement;
+      const inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
 
       fixture.detectChanges();
       expect(inputElement.getAttribute('aria-label')).toBe('Super effective');
@@ -729,18 +725,12 @@ describe('MatCheckbox', () => {
 
       expect(fixture.nativeElement.querySelector('input').hasAttribute('aria-label')).toBe(false);
     });
-  });
-
-  describe('with provided aria-labelledby ', () => {
-    let checkboxDebugElement: DebugElement;
-    let checkboxNativeElement: HTMLElement;
-    let inputElement: HTMLInputElement;
 
     it('should use the provided aria-labelledby', () => {
       fixture = createComponent(CheckboxWithAriaLabelledby);
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
-      checkboxNativeElement = checkboxDebugElement.nativeElement;
-      inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
+      const checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      const checkboxNativeElement = checkboxDebugElement.nativeElement;
+      const inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
 
       fixture.detectChanges();
       expect(inputElement.getAttribute('aria-labelledby')).toBe('some-id');
@@ -748,13 +738,23 @@ describe('MatCheckbox', () => {
 
     it('should not assign aria-labelledby if none is provided', () => {
       fixture = createComponent(SingleCheckbox);
-      checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
-      checkboxNativeElement = checkboxDebugElement.nativeElement;
-      inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
+      const checkboxDebugElement = fixture.debugElement.query(By.directive(MatCheckbox))!;
+      const checkboxNativeElement = checkboxDebugElement.nativeElement;
+      const inputElement = <HTMLInputElement>checkboxNativeElement.querySelector('input');
 
       fixture.detectChanges();
       expect(inputElement.getAttribute('aria-labelledby')).toBe(null);
     });
+
+    it('should clear the static aria attributes from the host node', () => {
+      fixture = createComponent(CheckboxWithStaticAriaAttributes);
+      const checkbox = fixture.debugElement.query(By.directive(MatCheckbox))!.nativeElement;
+      fixture.detectChanges();
+
+      expect(checkbox.hasAttribute('aria')).toBe(false);
+      expect(checkbox.hasAttribute('aria-labelledby')).toBe(false);
+    });
+
   });
 
   describe('with provided aria-describedby ', () => {
@@ -1418,3 +1418,8 @@ class TextBindingComponent {
 @Component({template: `<mat-checkbox></mat-checkbox>`})
 class SimpleCheckbox {
 }
+
+@Component({
+  template: `<mat-checkbox aria-label="Checkbox" aria-labelledby="something"></mat-checkbox>`
+})
+class CheckboxWithStaticAriaAttributes {}
