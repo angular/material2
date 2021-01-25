@@ -13,7 +13,7 @@ import {
   CdkTable,
   CdkRecycleRows,
   FooterRowOutlet,
-  NoDataRowOutlet,
+  NoDataRowOutlet
 } from './table';
 import {
   CdkCellOutlet, CdkFooterRow, CdkFooterRowDef, CdkHeaderRow, CdkHeaderRowDef, CdkRow,

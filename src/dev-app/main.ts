@@ -11,5 +11,8 @@ import '@angular/localize/init';
 
 import {platformBrowser} from '@angular/platform-browser';
 import {MainModuleNgFactory} from './main-module.ngfactory';
+import {enableProdMode} from '@angular/core';
+
+enableProdMode();
 
 platformBrowser().bootstrapModuleFactory(MainModuleNgFactory);

@@ -118,6 +118,7 @@ export interface CdkVirtualScrollRepeater<T> {
 
 export declare class CdkVirtualScrollViewport extends CdkScrollable implements OnInit, OnDestroy {
     _contentWrapper: ElementRef<HTMLElement>;
+    readonly _renderedContentOffsetRendered: Observable<number>;
     _totalContentHeight: string;
     _totalContentWidth: string;
     get appendOnly(): boolean;

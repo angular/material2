@@ -10,7 +10,9 @@ import {
   CDK_TABLE_TEMPLATE,
   CdkTable,
   CDK_TABLE,
-  _CoalescedStyleScheduler, _COALESCED_STYLE_SCHEDULER, STICKY_POSITIONING_LISTENER
+  _CoalescedStyleScheduler,
+  _COALESCED_STYLE_SCHEDULER,
+  STICKY_POSITIONING_LISTENER
 } from '@angular/cdk/table';
 import {ChangeDetectionStrategy, Component, Directive, ViewEncapsulation} from '@angular/core';
 import {

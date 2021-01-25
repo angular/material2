@@ -14,6 +14,8 @@ export declare class _Schedule {
     tasks: (() => unknown)[];
 }
 
+export declare const _TABLE_COLLECTION_VIEWER: InjectionToken<TableCollectionViewer>;
+
 export declare class BaseCdkCell {
     constructor(columnDef: CdkColumnDef, elementRef: ElementRef);
 }
@@ -199,6 +201,8 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     _contentHeaderRowDefs: QueryList<CdkHeaderRowDef>;
     _contentRowDefs: QueryList<CdkRowDef<T>>;
     protected _data: readonly T[];
+    readonly _dataSourceChanges: Subject<CdkTableDataSourceInput<T>>;
+    readonly _dataStream: Subject<readonly T[]>;
     protected readonly _differs: IterableDiffers;
     protected readonly _dir: Directionality;
     protected readonly _elementRef: ElementRef;
@@ -208,8 +212,10 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     _multiTemplateDataRows: boolean;
     _noDataRow: CdkNoDataRow;
     _noDataRowOutlet: NoDataRowOutlet;
+    protected readonly _parentPositioningListener?: StickyPositioningListener | undefined;
+    protected readonly _positioningListener?: StickyPositioningListener | undefined;
+    protected _renderedRange?: ListRange;
     _rowOutlet: DataRowOutlet;
-    protected readonly _stickyPositioningListener: StickyPositioningListener;
     protected readonly _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>;
     get dataSource(): CdkTableDataSourceInput<T>;
     set dataSource(dataSource: CdkTableDataSourceInput<T>);
@@ -221,12 +227,9 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     protected stickyCssClass: string;
     get trackBy(): TrackByFunction<T>;
     set trackBy(fn: TrackByFunction<T>);
-    readonly viewChange: BehaviorSubject<{
-        start: number;
-        end: number;
-    }>;
-    constructor(_differs: IterableDiffers, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef, role: string, _dir: Directionality, _document: any, _platform: Platform, _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>, _coalescedStyleScheduler: _CoalescedStyleScheduler, _viewportRuler: ViewportRuler,
-    _stickyPositioningListener: StickyPositioningListener);
+    readonly viewChange: BehaviorSubject<ListRange>;
+    constructor(_differs: IterableDiffers, _changeDetectorRef: ChangeDetectorRef, _elementRef: ElementRef, role: string, _dir: Directionality, _document: any, _platform: Platform, _viewRepeater: _ViewRepeater<T, RenderRow<T>, RowContext<T>>, _coalescedStyleScheduler: _CoalescedStyleScheduler,
+    _parentPositioningListener?: StickyPositioningListener | undefined, _viewportRuler?: ViewportRuler | undefined, _positioningListener?: StickyPositioningListener | undefined, viewChange?: BehaviorSubject<ListRange>);
     _getRenderedRows(rowOutlet: RowOutlet): HTMLElement[];
     _getRowDefs(data: T, dataIndex: number): CdkRowDef<T>[];
     addColumnDef(columnDef: CdkColumnDef): void;
@@ -248,8 +251,10 @@ export declare class CdkTable<T> implements AfterContentChecked, CollectionViewe
     static ngAcceptInputType_fixedLayout: BooleanInput;
     static ngAcceptInputType_multiTemplateDataRows: BooleanInput;
     static ɵcmp: i0.ɵɵComponentDeclaration<CdkTable<any>, "cdk-table, table[cdk-table]", ["cdkTable"], { "trackBy": "trackBy"; "dataSource": "dataSource"; "multiTemplateDataRows": "multiTemplateDataRows"; "fixedLayout": "fixedLayout"; }, {}, ["_noDataRow", "_contentColumnDefs", "_contentRowDefs", "_contentHeaderRowDefs", "_contentFooterRowDefs"], ["caption", "colgroup, col"]>;
-    static ɵfac: i0.ɵɵFactoryDeclaration<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null, null, null, null, { optional: true; skipSelf: true; }]>;
+    static ɵfac: i0.ɵɵFactoryDeclaration<CdkTable<any>, [null, null, null, { attribute: "role"; }, { optional: true; }, null, null, null, null, { optional: true; skipSelf: true; }, { optional: true; }, { optional: true; }, { optional: true; }]>;
 }
+
+export declare type CdkTableDataSourceInput<T> = readonly T[] | DataSource<T> | Observable<readonly T[]>;
 
 export declare class CdkTableModule {
     static ɵfac: i0.ɵɵFactoryDeclaration<CdkTableModule, never>;

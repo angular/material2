@@ -8,6 +8,7 @@ CDK_EXPERIMENTAL_ENTRYPOINTS = [
     "popover-edit",
     "scrolling",
     "selection",
+    "table",
     "table-scroll-container",
 ]
 
