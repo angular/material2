@@ -6,18 +6,17 @@
   $foreground: map-get($config, foreground);
 
   .mat-sort-header-arrow {
-    $table-background: mat-color($background, 'card');
-    $text-color: mat-color($foreground, secondary-text);
-
     // Because the arrow is made up of multiple elements that are stacked on top of each other,
     // we can't use the semi-transparent color from the theme directly. If the value is a color
     // *type*, we convert it into a solid color by taking the opacity from the rgba value and
     // using the value to determine the percentage of the background to put into foreground
     // when mixing the colors together. Otherwise, if it resolves to something different
     // (e.g. it resolves to a CSS variable), we use the color directly.
+    $text-color: mat-color($foreground, secondary-text);
+    $table-background: mat-color($background, 'card');
+
     @if (type-of($table-background) == color and type-of($text-color) == color) {
-      $text-opacity: opacity($text-color);
-      color: mix($table-background, rgba($text-color, 1), (1 - $text-opacity) * 100%);
+      color: mat-rgba-to-hex($text-color, $table-background);
     }
     @else {
       color: $text-color;
