@@ -297,11 +297,10 @@ export abstract class _MatTooltipBase<T extends _TooltipComponentBase> implement
     this._focusMonitor.monitor(this._elementRef)
       .pipe(takeUntil(this._destroyed))
       .subscribe(origin => {
-        // Note that the focus monitor runs outside the Angular zone.
         if (!origin) {
-          this._ngZone.run(() => this.hide(0));
+          this.hide(0);
         } else if (origin === 'keyboard') {
-          this._ngZone.run(() => this.show());
+          this.show();
         }
     });
   }
