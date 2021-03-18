@@ -104,11 +104,12 @@ const INDETERMINATE_ANIMATION_TEMPLATE = `
  * `<mat-progress-spinner>` component.
  */
 @Component({
-  selector: 'mat-progress-spinner',
+  selector: 'mat-progress-spinner, mat-spinner',
   exportAs: 'matProgressSpinner',
   host: {
     'role': 'progressbar',
-    'class': 'mat-progress-spinner',
+    // `mat-spinner` is here for backward compatibility.
+    'class': 'mat-progress-spinner mat-spinner',
     '[class._mat-animation-noopable]': `_noopAnimations`,
     '[style.width.px]': 'diameter',
     '[style.height.px]': 'diameter',
@@ -205,6 +206,10 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
     this._fallbackAnimation = platform.EDGE || platform.TRIDENT;
     this._noopAnimations = animationMode === 'NoopAnimations' &&
         (!!defaults && !defaults._forceAnimations);
+
+    if (_elementRef.nativeElement.nodeName.toLowerCase() === 'mat-spinner') {
+      this.mode = 'indeterminate';
+    }
 
     if (defaults) {
       if (defaults.diameter) {
@@ -311,38 +316,4 @@ export class MatProgressSpinner extends _MatProgressSpinnerMixinBase implements 
   static ngAcceptInputType_diameter: NumberInput;
   static ngAcceptInputType_strokeWidth: NumberInput;
   static ngAcceptInputType_value: NumberInput;
-}
-
-
-/**
- * `<mat-spinner>` component.
- *
- * This is a component definition to be used as a convenience reference to create an
- * indeterminate `<mat-progress-spinner>` instance.
- */
-@Component({
-  selector: 'mat-spinner',
-  host: {
-    'role': 'progressbar',
-    'mode': 'indeterminate',
-    'class': 'mat-spinner mat-progress-spinner',
-    '[class._mat-animation-noopable]': `_noopAnimations`,
-    '[style.width.px]': 'diameter',
-    '[style.height.px]': 'diameter',
-  },
-  inputs: ['color'],
-  templateUrl: 'progress-spinner.html',
-  styleUrls: ['progress-spinner.css'],
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  encapsulation: ViewEncapsulation.None,
-})
-export class MatSpinner extends MatProgressSpinner {
-  constructor(elementRef: ElementRef<HTMLElement>, platform: Platform,
-              @Optional() @Inject(DOCUMENT) document: any,
-              @Optional() @Inject(ANIMATION_MODULE_TYPE) animationMode: string,
-              @Inject(MAT_PROGRESS_SPINNER_DEFAULT_OPTIONS)
-                  defaults?: MatProgressSpinnerDefaultOptions) {
-    super(elementRef, platform, document, animationMode, defaults);
-    this.mode = 'indeterminate';
-  }
 }
