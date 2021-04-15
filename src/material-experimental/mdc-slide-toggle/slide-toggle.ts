@@ -49,6 +49,37 @@ const RIPPLE_ANIMATION_CONFIG: RippleAnimationConfig = {
   exitDuration: numbers.FG_DEACTIVATION_MS,
 };
 
+class SlideToggleAdapter implements MDCSwitchAdapter {
+
+  private _switchNativeElement: HTMLElement;
+  private _inputNativeElement: HTMLElement;
+
+  constructor(private readonly _delegate: MatSlideToggle) {
+    this._switchNativeElement = _delegate._switchElement.nativeElement;
+    this._inputNativeElement = _delegate._inputElement.nativeElement;
+  }
+
+  addClass(className: string) {
+    return this._switchNativeElement.classList.add(className);
+  }
+
+  removeClass(className: string) {
+    return this._switchNativeElement.classList.remove(className);
+  }
+
+  setNativeControlChecked(checked: boolean) {
+    this._delegate.checked = checked;
+  }
+
+  setNativeControlDisabled(disabled: boolean) {
+    this._delegate.disabled = disabled;
+  }
+
+  setNativeControlAttr(name: string, value: string) {
+    this._inputNativeElement.setAttribute(name, value);
+  }
+}
+
 /** @docs-private */
 export const MAT_SLIDE_TOGGLE_VALUE_ACCESSOR: any = {
   provide: NG_VALUE_ACCESSOR,
@@ -97,15 +128,6 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   private _required: boolean = false;
   private _checked: boolean = false;
   private _foundation: MDCSwitchFoundation;
-  private _adapter: MDCSwitchAdapter = {
-    addClass: className => this._switchElement.nativeElement.classList.add(className),
-    removeClass: className => this._switchElement.nativeElement.classList.remove(className),
-    setNativeControlChecked: checked => this._checked = checked,
-    setNativeControlDisabled: disabled => this._disabled = disabled,
-    setNativeControlAttr: (name, value) => {
-      this._inputElement.nativeElement.setAttribute(name, value);
-    }
-  };
 
   /** Whether the slide toggle is currently focused. */
   _focused: boolean;
@@ -207,7 +229,7 @@ export class MatSlideToggle implements ControlValueAccessor, AfterViewInit, OnDe
   }
 
   ngAfterViewInit() {
-    const foundation = this._foundation = new MDCSwitchFoundation(this._adapter);
+    const foundation = this._foundation = new MDCSwitchFoundation(new SlideToggleAdapter(this));
     foundation.setDisabled(this.disabled);
     foundation.setChecked(this.checked);
 
