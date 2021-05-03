@@ -115,8 +115,14 @@ export abstract class _MatPaginatorBase<O extends {
   @Input()
   get pageIndex(): number { return this._pageIndex; }
   set pageIndex(value: number) {
-    this._pageIndex = Math.max(coerceNumberProperty(value), 0);
-    this._changeDetectorRef.markForCheck();
+    const newPageIndex = Math.max(coerceNumberProperty(value), 0);
+    const oldPageIndex = this._pageIndex;
+
+    if (newPageIndex !== oldPageIndex) {
+      this._pageIndex = newPageIndex;
+      this._emitPageEvent(oldPageIndex);
+      this._changeDetectorRef.markForCheck();
+    }
   }
   private _pageIndex = 0;
 
@@ -124,8 +130,13 @@ export abstract class _MatPaginatorBase<O extends {
   @Input()
   get length(): number { return this._length; }
   set length(value: number) {
-    this._length = coerceNumberProperty(value);
-    this._changeDetectorRef.markForCheck();
+    const newLength = coerceNumberProperty(value);
+
+    if (newLength !== this._length) {
+      this._length = newLength;
+      this._emitPageEvent(this.pageIndex);
+      this._changeDetectorRef.markForCheck();
+    }
   }
   private _length = 0;
 
@@ -133,8 +144,13 @@ export abstract class _MatPaginatorBase<O extends {
   @Input()
   get pageSize(): number { return this._pageSize; }
   set pageSize(value: number) {
-    this._pageSize = Math.max(coerceNumberProperty(value), 0);
-    this._updateDisplayedPageSizeOptions();
+    const newPageSize = Math.max(coerceNumberProperty(value), 0);
+
+    if (newPageSize !== this._pageSize) {
+      this._pageSize = newPageSize;
+      this._updateDisplayedPageSizeOptions();
+      this._emitPageEvent(this.pageIndex);
+    }
   }
   private _pageSize: number;
 
