@@ -1,0 +1,46 @@
+name: Approve SSR screenshot golden
+
+on:
+  pull_request_review:
+    types: [submitted]
+
+permissions:
+  pull-requests: write
+  contents: write
+
+jobs:
+  ssr_golden_approval:
+    runs-on: ubuntu-latest
+    # Run only if the `/approve-ssr-golden` command is specified in the review.
+    # Skip this job if the comment author is not the author of the pull request.
+    if: |
+      contains(github.event.review.body, '/approve-ssr-golden') &&
+      (github.event.review.author_association == 'COLLABORATOR' ||
+       github.event.review.author_association == 'MEMBER' ||
+       github.event.review.author_association == 'OWNER' ||
+       github.event.review.user.login == github.event.pull_request.user.login
+      )
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Retrieving pull request head refspec
+        uses: actions/github-script@v4
+        id: pr-refspec
+        with:
+          result-encoding: string
+          script: |
+            const {data} = await github.pulls.get(
+              {...context.repo, pull_number: ${{github.event.pull_request.number}}});
+            const repoGitUrl = `github.com/${data.head.repo.full_name}.git`;
+            return `http://ng-robot:${{secrets.GITHUB_TOKEN}}@${repoGitUrl} HEAD:${data.head.ref}`;
+      - run: yarn install --frozen-lockfile --non-interactive
+      - run: bazel run //src/universal-app:screenshot_test.accept
+      - name: Push back to pull request
+        env:
+          TARGET_REFSPEC: ${{steps.pr-refspec.outputs.result}}
+        run: |
+          git config --global user.name 'ng-github-robot'
+          git config --global user.email 'noreply@angular.io'
+          git commit -am "test: update kitchen-sink prerender screenshot golden"
+          git push ${TARGET_REFSPEC}
