@@ -23,6 +23,7 @@ import {ViewportRuler} from '@angular/cdk/scrolling';
 import {DOCUMENT} from '@angular/common';
 import {
   AfterViewInit,
+  AfterContentChecked,
   ChangeDetectorRef,
   Directive,
   ElementRef,
@@ -96,7 +97,7 @@ export function getMatAutocompleteMissingPanelError(): Error {
 /** Base class with all of the `MatAutocompleteTrigger` functionality. */
 @Directive()
 export abstract class _MatAutocompleteTriggerBase implements ControlValueAccessor, AfterViewInit,
-  OnChanges, OnDestroy {
+  AfterContentChecked, OnChanges, OnDestroy {
 
   private _overlayRef: OverlayRef | null;
   private _portal: TemplatePortal;
@@ -128,6 +129,12 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
 
   /** Whether the element is inside of a ShadowRoot component. */
   private _isInsideShadowRoot: boolean;
+
+  /** Whether the component has been initializied. */
+  private _isInitialized: boolean;
+
+  /** Initial value that should be shown after the component is initialized. */
+  private _initialValueToSelect: any;
 
   /** Stream of keyboard events that can close the panel. */
   private readonly _closeKeyEventStream = new Subject<void>();
@@ -217,6 +224,15 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
         this._overlayRef!.updatePosition();
       }
     }
+  }
+
+  ngAfterContentChecked() {
+    if (!this._isInitialized && typeof this._initialValueToSelect !== 'undefined') {
+      this._setTriggerValue(this._initialValueToSelect);
+      this._initialValueToSelect = undefined;
+    }
+
+    this._isInitialized = true;
   }
 
   ngOnDestroy() {
@@ -349,7 +365,14 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
 
   // Implemented as part of ControlValueAccessor.
   writeValue(value: any): void {
-    Promise.resolve(null).then(() => this._setTriggerValue(value));
+    if (this._isInitialized) {
+      this._setTriggerValue(value);
+    } else {
+      // If the component isn't initialized yet, defer until the first CD pass, otherwise we'll
+      // miss the initial `displayWith` value. By deferring until the first `AfterContentChecked`
+      // we avoid making the method async while preventing "changed after checked" errors.
+      this._initialValueToSelect = value;
+    }
   }
 
   // Implemented as part of ControlValueAccessor.
