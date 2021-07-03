@@ -140,7 +140,7 @@ export class CdkVirtualForOf<T> implements
 
   /**
    * The size of the cache used to store templates that are not being used for re-use later.
-   * Setting the cache size to `0` will disable caching. Defaults to 20 templates.
+   * Setting the cache size to `0` will disable caching. Defaults to 100 templates.
    */
   @Input()
   get cdkVirtualForTemplateCacheSize() {

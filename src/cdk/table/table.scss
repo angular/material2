@@ -1,3 +1,17 @@
 .cdk-table-fixed-layout {
   table-layout: fixed;
 }
+
+.cdk-table-virtual-scroll {
+  border-collapse: collapse;
+
+  .cdk-header-row.cdk-table-sticky,
+  .cdk-header-cell.cdk-table-sticky {
+    will-change: top;
+  }
+
+  .cdk-footer-row.cdk-table-sticky,
+  .cdk-footer-cell.cdk-table-sticky {
+    will-change: bottom;
+  }
+}
