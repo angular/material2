@@ -10,6 +10,8 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     ariaLabelledby: string;
     get autoActiveFirstOption(): boolean;
     set autoActiveFirstOption(value: boolean);
+    get autoSelectActiveOption(): boolean;
+    set autoSelectActiveOption(value: boolean);
     set classList(value: string | string[]);
     readonly closed: EventEmitter<void>;
     displayWith: ((value: any) => string) | null;
@@ -34,8 +36,9 @@ export declare abstract class _MatAutocompleteBase extends _MatAutocompleteMixin
     ngAfterContentInit(): void;
     ngOnDestroy(): void;
     static ngAcceptInputType_autoActiveFirstOption: BooleanInput;
+    static ngAcceptInputType_autoSelectActiveOption: BooleanInput;
     static ngAcceptInputType_disableRipple: BooleanInput;
-    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatAutocompleteBase, never, never, { "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "displayWith": "displayWith"; "autoActiveFirstOption": "autoActiveFirstOption"; "panelWidth": "panelWidth"; "classList": "class"; }, { "optionSelected": "optionSelected"; "opened": "opened"; "closed": "closed"; "optionActivated": "optionActivated"; }, never>;
+    static ɵdir: i0.ɵɵDirectiveDeclaration<_MatAutocompleteBase, never, never, { "ariaLabel": "aria-label"; "ariaLabelledby": "aria-labelledby"; "displayWith": "displayWith"; "autoActiveFirstOption": "autoActiveFirstOption"; "autoSelectActiveOption": "autoSelectActiveOption"; "panelWidth": "panelWidth"; "classList": "class"; }, { "optionSelected": "optionSelected"; "opened": "opened"; "closed": "closed"; "optionActivated": "optionActivated"; }, never>;
     static ɵfac: i0.ɵɵFactoryDeclaration<_MatAutocompleteBase, never>;
 }
 
@@ -51,7 +54,7 @@ export declare abstract class _MatAutocompleteTriggerBase implements ControlValu
     protected abstract _aboveClass: string;
     _onChange: (value: any) => void;
     _onTouched: () => void;
-    get activeOption(): MatOption | null;
+    get activeOption(): _MatOptionBase | null;
     autocomplete: _MatAutocompleteBase;
     autocompleteAttribute: string;
     get autocompleteDisabled(): boolean;
@@ -114,6 +117,7 @@ export interface MatAutocompleteActivatedEvent {
 
 export interface MatAutocompleteDefaultOptions {
     autoActiveFirstOption?: boolean;
+    autoSelectActiveOption?: boolean;
     overlayPanelClass?: string | string[];
 }
 

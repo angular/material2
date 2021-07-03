@@ -42,7 +42,7 @@ import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {
   _countGroupLabelsBeforeOption,
   _getOptionScrollPosition,
-  MatOption,
+  _MatOptionBase,
   MatOptionSelectionChange,
 } from '@angular/material/core';
 import {MAT_FORM_FIELD, MatFormField} from '@angular/material/form-field';
@@ -128,6 +128,15 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
 
   /** Whether the element is inside of a ShadowRoot component. */
   private _isInsideShadowRoot: boolean;
+
+  /** Value inside the input before we auto-selected an option. */
+  private _valueBeforeAutoSelection: string | undefined;
+
+  /**
+   * Current option that we have auto-selected as the user is navigating,
+   * but which hasn't been propagated to the model value yet.
+   */
+  private _pendingAutoselectedOption: _MatOptionBase | null;
 
   /** Stream of keyboard events that can close the panel. */
   private readonly _closeKeyEventStream = new Subject<void>();
@@ -258,6 +267,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     }
 
     this.autocomplete._isOpen = this._overlayAttached = false;
+    this._pendingAutoselectedOption = null;
 
     if (this._overlayRef && this._overlayRef.hasAttached()) {
       this._overlayRef.detach();
@@ -317,7 +327,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   }) as Observable<MatOptionSelectionChange>;
 
   /** The currently active option, coerced to MatOption type. */
-  get activeOption(): MatOption | null {
+  get activeOption(): _MatOptionBase | null {
     if (this.autocomplete && this.autocomplete._keyManager) {
       return this.autocomplete._keyManager.activeItem;
     }
@@ -349,7 +359,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
 
   // Implemented as part of ControlValueAccessor.
   writeValue(value: any): void {
-    Promise.resolve(null).then(() => this._setTriggerValue(value));
+    Promise.resolve(null).then(() => this._assignOptionValue(value));
   }
 
   // Implemented as part of ControlValueAccessor.
@@ -369,6 +379,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
 
   _handleKeydown(event: KeyboardEvent): void {
     const keyCode = event.keyCode;
+    const wasOpen = this.panelOpen;
 
     // Prevent the default action on all escape key presses. This is here primarily to bring IE
     // in line with other browsers. By default, pressing escape on IE will cause it to revert
@@ -378,7 +389,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
       event.preventDefault();
     }
 
-    if (this.activeOption && keyCode === ENTER && this.panelOpen) {
+    if (this.activeOption && keyCode === ENTER && wasOpen) {
       this.activeOption._selectViaInteraction();
       this._resetActiveItem();
       event.preventDefault();
@@ -386,7 +397,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
       const prevActiveItem = this.autocomplete._keyManager.activeItem;
       const isArrowKey = keyCode === UP_ARROW || keyCode === DOWN_ARROW;
 
-      if (this.panelOpen || keyCode === TAB) {
+      if (wasOpen || keyCode === TAB) {
         this.autocomplete._keyManager.onKeydown(event);
       } else if (isArrowKey && this._canOpen()) {
         this.openPanel();
@@ -394,6 +405,15 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
 
       if (isArrowKey || this.autocomplete._keyManager.activeItem !== prevActiveItem) {
         this._scrollToOption(this.autocomplete._keyManager.activeItemIndex || 0);
+
+        if (this.autocomplete.autoSelectActiveOption && this.activeOption) {
+          if (!this._pendingAutoselectedOption) {
+            this._valueBeforeAutoSelection = this._element.nativeElement.value;
+          }
+
+          this._pendingAutoselectedOption = this.activeOption;
+          this._assignOptionValue(this.activeOption.value);
+        }
       }
     }
   }
@@ -414,6 +434,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     // See: https://connect.microsoft.com/IE/feedback/details/885747/
     if (this._previousValue !== value) {
       this._previousValue = value;
+      this._pendingAutoselectedOption = null;
       this._onChange(value);
 
       if (this._canOpen() && this._document.activeElement === event.target) {
@@ -510,24 +531,26 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
     }
   }
 
-  private _setTriggerValue(value: any): void {
+  private _assignOptionValue(value: any): void {
     const toDisplay = this.autocomplete && this.autocomplete.displayWith ?
       this.autocomplete.displayWith(value) :
       value;
 
     // Simply falling back to an empty string if the display value is falsy does not work properly.
     // The display value can also be the number zero and shouldn't fall back to an empty string.
-    const inputValue = toDisplay != null ? toDisplay : '';
+    this._updateNativeInputValue(toDisplay != null ? toDisplay : '');
+  }
 
+  private _updateNativeInputValue(value: string): void {
     // If it's used within a `MatFormField`, we should set it through the property so it can go
     // through change detection.
     if (this._formField) {
-      this._formField._control.value = inputValue;
+      this._formField._control.value = value;
     } else {
-      this._element.nativeElement.value = inputValue;
+      this._element.nativeElement.value = value;
     }
 
-    this._previousValue = inputValue;
+    this._previousValue = value;
   }
 
   /**
@@ -536,12 +559,14 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
    * stemmed from the user.
    */
   private _setValueAndClose(event: MatOptionSelectionChange | null): void {
-    if (event && event.source) {
-      this._clearPreviousSelectedOption(event.source);
-      this._setTriggerValue(event.source.value);
-      this._onChange(event.source.value);
+    const toSelect = event ? event.source : this._pendingAutoselectedOption;
+
+    if (toSelect) {
+      this._clearPreviousSelectedOption(toSelect);
+      this._assignOptionValue(toSelect.value);
+      this._onChange(toSelect.value);
+      this.autocomplete._emitSelectEvent(toSelect);
       this._element.nativeElement.focus();
-      this.autocomplete._emitSelectEvent(event.source);
     }
 
     this.closePanel();
@@ -550,7 +575,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
   /**
    * Clear any previous selected option and emit a selection change event for this option
    */
-  private _clearPreviousSelectedOption(skip: MatOption) {
+  private _clearPreviousSelectedOption(skip: _MatOptionBase) {
     this.autocomplete.options.forEach(option => {
       if (option !== skip && option.selected) {
         option.deselect();
@@ -577,24 +602,7 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
         {id: this._formField?.getLabelId()});
       overlayRef = this._overlay.create(this._getOverlayConfig());
       this._overlayRef = overlayRef;
-
-      // Use the `keydownEvents` in order to take advantage of
-      // the overlay event targeting provided by the CDK overlay.
-      overlayRef.keydownEvents().subscribe(event => {
-        // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
-        // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
-        if ((event.keyCode === ESCAPE && !hasModifierKey(event)) ||
-            (event.keyCode === UP_ARROW && hasModifierKey(event, 'altKey'))) {
-          this._resetActiveItem();
-          this._closeKeyEventStream.next();
-
-          // We need to stop propagation, otherwise the event will eventually
-          // reach the input itself and cause the overlay to be reopened.
-          event.stopPropagation();
-          event.preventDefault();
-        }
-      });
-
+      this._handleOverlayEvents(overlayRef);
       this._viewportSubscription = this._viewportRuler.change().subscribe(() => {
         if (this.panelOpen && overlayRef) {
           overlayRef.updateSize({width: this._getPanelWidth()});
@@ -752,6 +760,33 @@ export abstract class _MatAutocompleteTriggerBase implements ControlValueAccesso
         autocomplete._setScrollTop(newScrollPosition);
       }
     }
+  }
+
+  /** Handles keyboard events coming from the overlay panel. */
+  private _handleOverlayEvents(overlayRef: OverlayRef) {
+    // Use the `keydownEvents` in order to take advantage of
+    // the overlay event targeting provided by the CDK overlay.
+    overlayRef.keydownEvents().subscribe(event => {
+      // Close when pressing ESCAPE or ALT + UP_ARROW, based on the a11y guidelines.
+      // See: https://www.w3.org/TR/wai-aria-practices-1.1/#textbox-keyboard-interaction
+      if ((event.keyCode === ESCAPE && !hasModifierKey(event)) ||
+          (event.keyCode === UP_ARROW && hasModifierKey(event, 'altKey'))) {
+        // If the user had typed something in before we autoselected an option, and they decided
+        // to cancel the selection, restore the input value to the one they had typed in.
+        if (this._pendingAutoselectedOption) {
+          this._updateNativeInputValue(this._valueBeforeAutoSelection ?? '');
+          this._pendingAutoselectedOption = null;
+        }
+
+        this._resetActiveItem();
+        this._closeKeyEventStream.next();
+
+        // We need to stop propagation, otherwise the event will eventually
+        // reach the input itself and cause the overlay to be reopened.
+        event.stopPropagation();
+        event.preventDefault();
+      }
+    });
   }
 
   static ngAcceptInputType_autocompleteDisabled: BooleanInput;
