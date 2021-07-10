@@ -1,5 +1,5 @@
 export declare abstract class _MatSlideToggleHarnessBase extends ComponentHarness {
-    protected _input: import("@angular/cdk/testing").AsyncFactoryFn<import("@angular/cdk/testing").TestElement>;
+    protected abstract _nativeElement: AsyncFactoryFn<TestElement>;
     blur(): Promise<void>;
     check(): Promise<void>;
     focus(): Promise<void>;
@@ -17,6 +17,7 @@ export declare abstract class _MatSlideToggleHarnessBase extends ComponentHarnes
 }
 
 export declare class MatSlideToggleHarness extends _MatSlideToggleHarnessBase {
+    protected _nativeElement: AsyncFactoryFn<TestElement>;
     toggle(): Promise<void>;
     static hostSelector: string;
     static with(options?: SlideToggleHarnessFilters): HarnessPredicate<MatSlideToggleHarness>;
