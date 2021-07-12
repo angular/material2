@@ -8,10 +8,10 @@
 
 import {
   BooleanInput,
-  coerceArray,
-  coerceNumberProperty,
-  coerceBooleanProperty,
   NumberInput,
+  coerceArray,
+  coerceBooleanProperty,
+  coerceNumberProperty,
 } from '@angular/cdk/coercion';
 import {
   ElementRef,
@@ -125,7 +125,13 @@ export class CdkDropList<T = any> implements OnDestroy {
 
   /** Whether sorting within this drop list is disabled. */
   @Input('cdkDropListSortingDisabled')
-  sortingDisabled: boolean;
+  get sortingDisabled(): boolean {
+    return this._sortingDisabled;
+  }
+  set sortingDisabled(value: boolean) {
+    this._sortingDisabled = coerceBooleanProperty(value);
+  }
+  private _sortingDisabled: boolean;
 
   /**
    * Function that is used to determine whether an item
@@ -140,11 +146,23 @@ export class CdkDropList<T = any> implements OnDestroy {
 
   /** Whether to auto-scroll the view when the user moves their pointer close to the edges. */
   @Input('cdkDropListAutoScrollDisabled')
-  autoScrollDisabled: boolean;
+  get autoScrollDisabled(): boolean {
+    return this._autoScrollDisabled;
+  }
+  set autoScrollDisabled(value: boolean) {
+    this._autoScrollDisabled = coerceBooleanProperty(value);
+  }
+  private _autoScrollDisabled: boolean;
 
   /** Number of pixels to scroll for each frame when auto-scrolling an element. */
   @Input('cdkDropListAutoScrollStep')
-  autoScrollStep: number;
+  get autoScrollStep(): number {
+    return this._autoScrollStep;
+  }
+  set autoScrollStep(value: number) {
+    this._autoScrollStep = coerceNumberProperty(value);
+  }
+  private _autoScrollStep: number;
 
   /** Emits when the user drops an item inside the container. */
   @Output('cdkDropListDropped')

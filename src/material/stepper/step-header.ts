@@ -8,6 +8,12 @@
 
 import {FocusMonitor, FocusOrigin} from '@angular/cdk/a11y';
 import {
+  BooleanInput,
+  NumberInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+} from '@angular/cdk/coercion';
+import {
   ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
@@ -63,19 +69,34 @@ export class MatStepHeader extends _MatStepHeaderBase implements AfterViewInit, 
   @Input() iconOverrides: {[key: string]: TemplateRef<MatStepperIconContext>};
 
   /** Index of the given step. */
-  @Input() index: number;
+  @Input()
+  get index(): number { return this._index; }
+  set index(value: number) { this._index = coerceNumberProperty(value); }
+  private _index: number;
 
   /** Whether the given step is selected. */
-  @Input() selected: boolean;
+  @Input()
+  get selected(): boolean { return this._selected; }
+  set selected(value: boolean) { this._selected = coerceBooleanProperty(value); }
+  private _selected: boolean;
 
   /** Whether the given step label is active. */
-  @Input() active: boolean;
+  @Input()
+  get active(): boolean { return this._active; }
+  set active(value: boolean) { this._active = coerceBooleanProperty(value); }
+  private _active: boolean;
 
   /** Whether the given step is optional. */
-  @Input() optional: boolean;
+  @Input()
+  get optional(): boolean { return this._optional; }
+  set optional(value: boolean) { this._optional = coerceBooleanProperty(value); }
+  private _optional: boolean;
 
   /** Whether the ripple should be disabled. */
-  @Input() disableRipple: boolean;
+  @Input()
+  get disableRipple(): boolean { return this._disableRipple; }
+  set disableRipple(value: boolean) { this._disableRipple = coerceBooleanProperty(value); }
+  private _disableRipple: boolean;
 
   constructor(
     public _intl: MatStepperIntl,
@@ -140,4 +161,10 @@ export class MatStepHeader extends _MatStepHeaderBase implements AfterViewInit, 
     }
     return state;
   }
+
+  static ngAcceptInputType_index: NumberInput;
+  static ngAcceptInputType_selected: BooleanInput;
+  static ngAcceptInputType_active: BooleanInput;
+  static ngAcceptInputType_optional: BooleanInput;
+  static ngAcceptInputType_disableRipple: BooleanInput;
 }

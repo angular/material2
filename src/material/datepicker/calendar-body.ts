@@ -19,6 +19,12 @@ import {
   SimpleChanges,
   OnDestroy,
 } from '@angular/core';
+import {
+  BooleanInput,
+  NumberInput,
+  coerceBooleanProperty,
+  coerceNumberProperty,
+} from '@angular/cdk/coercion';
 import {take} from 'rxjs/operators';
 
 /** Extra CSS classes that can be associated with a calendar cell. */
@@ -77,43 +83,81 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
   @Input() rows: MatCalendarCell[][];
 
   /** The value in the table that corresponds to today. */
-  @Input() todayValue: number;
+  @Input()
+  get todayValue(): number { return this._todayValue; }
+  set todayValue(value: number) { this._todayValue = coerceNumberProperty(value); }
+  private _todayValue: number;
 
   /** Start value of the selected date range. */
-  @Input() startValue: number;
+  @Input()
+  get startValue(): number { return this._startValue; }
+  set startValue(value: number) { this._startValue = coerceNumberProperty(value); }
+  private _startValue: number;
 
   /** End value of the selected date range. */
-  @Input() endValue: number;
+  @Input()
+  get endValue(): number { return this._endValue; }
+  set endValue(value: number) { this._endValue = coerceNumberProperty(value); }
+  private _endValue: number;
 
   /** The minimum number of free cells needed to fit the label in the first row. */
-  @Input() labelMinRequiredCells: number;
+  @Input()
+  get labelMinRequiredCells(): number { return this._labelMinRequiredCells; }
+  set labelMinRequiredCells(value: number) {
+    this._labelMinRequiredCells = coerceNumberProperty(value);
+  }
+  private _labelMinRequiredCells: number;
 
   /** The number of columns in the table. */
-  @Input() numCols: number = 7;
+  @Input()
+  get numCols(): number { return this._numCols; }
+  set numCols(value: number) { this._numCols = coerceNumberProperty(value); }
+  private _numCols = 7;
 
   /** The cell number of the active cell in the table. */
-  @Input() activeCell: number = 0;
+  @Input()
+  get activeCell(): number { return this._activeCell; }
+  set activeCell(value: number) { this._activeCell = coerceNumberProperty(value); }
+  private _activeCell = 0;
 
   /** Whether a range is being selected. */
-  @Input() isRange: boolean = false;
+  @Input()
+  get isRange(): boolean { return this._isRange; }
+  set isRange(value: boolean) { this._isRange = coerceBooleanProperty(value); }
+  private _isRange = false;
 
   /**
    * The aspect ratio (width / height) to use for the cells in the table. This aspect ratio will be
    * maintained even as the table resizes.
    */
-  @Input() cellAspectRatio: number = 1;
+  @Input()
+  get cellAspectRatio(): number { return this._cellAspectRatio; }
+  set cellAspectRatio(value: number) { this._cellAspectRatio = coerceNumberProperty(value); }
+  private _cellAspectRatio = 1;
 
   /** Start of the comparison range. */
-  @Input() comparisonStart: number | null;
+  @Input()
+  get comparisonStart(): number | null { return this._comparisonStart; }
+  set comparisonStart(value: number | null) { this._comparisonStart = coerceNumberProperty(value); }
+  private _comparisonStart: number | null;
 
   /** End of the comparison range. */
-  @Input() comparisonEnd: number | null;
+  @Input()
+  get comparisonEnd(): number | null { return this._comparisonEnd; }
+  set comparisonEnd(value: number | null) { this._comparisonEnd = coerceNumberProperty(value); }
+  private _comparisonEnd: number | null;
 
   /** Start of the preview range. */
-  @Input() previewStart: number | null = null;
+  @Input()
+  get previewStart(): number | null { return this._previewStart; }
+  set previewStart(value: number | null) { this._previewStart = coerceNumberProperty(value); }
+  private _previewStart: number | null = null;
 
   /** End of the preview range. */
-  @Input() previewEnd: number | null = null;
+  @Input()
+  get previewEnd(): number | null { return this._previewEnd; }
+  set previewEnd(value: number | null) { this._previewEnd = coerceNumberProperty(value); }
+  private _previewEnd: number | null = null;
 
   /** Emits when a new value is selected. */
   @Output() readonly selectedValueChange = new EventEmitter<MatCalendarUserEvent<number>>();
@@ -359,6 +403,18 @@ export class MatCalendarBody implements OnChanges, OnDestroy {
     return null;
   }
 
+  static ngAcceptInputType_todayValue: NumberInput;
+  static ngAcceptInputType_startValue: NumberInput;
+  static ngAcceptInputType_endValue: NumberInput;
+  static ngAcceptInputType_labelMinRequiredCells: NumberInput;
+  static ngAcceptInputType_numCols: NumberInput;
+  static ngAcceptInputType_activeCell: NumberInput;
+  static ngAcceptInputType_isRange: BooleanInput;
+  static ngAcceptInputType_cellAspectRatio: NumberInput;
+  static ngAcceptInputType_comparisonStart: NumberInput;
+  static ngAcceptInputType_comparisonEnd: NumberInput;
+  static ngAcceptInputType_previewStart: NumberInput;
+  static ngAcceptInputType_previewEnd: NumberInput;
 }
 
 /** Checks whether a node is a table cell element. */
